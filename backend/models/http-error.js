@@ -5,7 +5,7 @@
 //   }
 // }
 
-// export default HttpError;
+// export HttpError;
 
 class HttpError extends Error {
   constructor(message, errorCode, messageArray) {
