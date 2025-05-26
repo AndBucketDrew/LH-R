@@ -15,6 +15,7 @@ import {
   removeFavorite,
   resetPassword,
   setNewPassword,
+  filterMember,
 } from '../controllers/members.js';
 
 import { addHeart, updateHeart, deleteHeart, getAllHearts } from '../controllers/hearts.js';
@@ -35,7 +36,8 @@ import { upload, checkToken } from '../common/middlewares.js';
 const router = new Router();
 
 // TODO: check token einbauen
-router.get('/members', checkToken, getAllMembers);
+router.get('/members', getAllMembers);
+router.get('/members/search', filterMember);
 router.get('/members/:id', checkToken, getOneMember);
 router.get('/members/distances/:id', checkToken, getDistances);
 
@@ -48,7 +50,7 @@ router.post(
   body('password').escape().isLength({ min: 6, max: 50 }),
   body('statement').escape().optional(),
   body('email').escape().isEmail().toLowerCase().normalizeEmail(),
-  body('nickname').trim().escape().isLength({ min: 4, max: 50 }),
+  body('username').trim().escape().isLength({ min: 4, max: 50 }),
   body('firstName').trim().escape().isLength({ min: 2, max: 50 }),
   body('lastName').trim().escape().isLength({ min: 2, max: 50 }),
   body('street').trim().escape().isLength({ min: 4, max: 50 }),

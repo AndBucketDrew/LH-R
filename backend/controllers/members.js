@@ -125,7 +125,7 @@ const login = async (req, res, next) => {
     const data = matchedData(req);
     // Member suchen, wenn nicht vorhanden -> Abbruch mit Fehlermeldung
     const foundMember = await Member.findOne({
-      $or: [{ nickname: data.login }, { email: data.login }],
+      $or: [{ username: data.login }, { email: data.login }],
     });
 
     if (!foundMember) {
@@ -140,7 +140,7 @@ const login = async (req, res, next) => {
     // Hash mit Klartext-Passwort vergleichen
     // wenn keine Überstimmung -> Abbruch mit Fehlermeldung
     if (!checkHash(data.password, foundPassword.password)) {
-      throw new HttpError('Wrong nickname / email or password', 401);
+      throw new HttpError('Wrong username / email or password', 401);
     }
 
     // Token generieren mit ID des Members als Inhalt
@@ -250,6 +250,23 @@ const getOneMember = async (req, res, next) => {
     return next(new HttpError(error, error.errorCode || 500));
   }
 };
+
+const filterMember = async (req, res, next) => {
+  const { q } = req.query;
+  // if(!q) {
+  //   throw new HttpError('query is required', 418);
+  // }
+
+  try {
+    const users = await Member.find({
+      username: { $regex: q, $options: 'i'}
+    })
+
+    res.json(users);
+  } catch (err) {
+    return next(new HttpError(error, error.errorCode || 500));
+  }
+}
 
 const updateMember = async (req, res, next) => {
   try {
@@ -407,7 +424,7 @@ const resetPassword = async (req, res, next) => {
     // gibts es den Member? Wenn nein -> Abbruch mit Fehler
     const { login } = req.body;
     const foundMember = await Member.findOne({
-      $or: [{ nickname: login }, { email: login }],
+      $or: [{ username: login }, { email: login }],
     });
 
     if (!foundMember) {
@@ -525,4 +542,5 @@ export {
   removeFavorite,
   resetPassword,
   setNewPassword,
+  filterMember
 };

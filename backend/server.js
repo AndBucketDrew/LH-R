@@ -13,7 +13,7 @@ import { errorHandler } from './common/index.js';
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const CONNECTION_STRING = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@wifi-fullstack.vn8ez.mongodb.net/lonelyhearts?retryWrites=true&w=majority`;
+const CONNECTION_STRING = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@h-remake.johjfoh.mongodb.net/`;
 
 // console.log(CONNECTION_STRING);
 const app = express();
