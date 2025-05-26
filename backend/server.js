@@ -40,11 +40,11 @@ app.use(express.static('www'));
 app.use('/axios', express.static('node_modules/axios/dist'));
 
 app.get('/', (req, res) => {
-  res.send('Welcome to Lonely Hearts API');
+  res.send('There are no Easter Eggs up here. Go away.');
 });
 
 // alle anderen Routen
-app.use('/api', router);
+app.use('/', router);
 
 // Fehler erzeugen, wenn die Route nicht gefunden wird
 app.use((req) => {
@@ -71,7 +71,7 @@ mongoose
   .then(() => {
     // Server starten
     app.listen(PORT, () => {
-      console.log('Express Server läuft unter Port ' + PORT);
+      console.log(`http://localhost:${PORT}`);
     });
   })
   .catch((error) => {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, param, header } from 'express-validator';
-import mongoose, { set } from 'mongoose';
+import mongoose from 'mongoose';
 
 import {
   signup,
@@ -18,7 +18,12 @@ import {
   filterMember,
 } from '../controllers/members.js';
 
-import { addHeart, updateHeart, deleteHeart, getAllHearts } from '../controllers/hearts.js';
+import {
+  addHeart,
+  updateHeart,
+  deleteHeart,
+  getAllHearts,
+} from '../controllers/hearts.js';
 import { addVisit, deleteVisit, getAllVisits } from '../controllers/visits.js';
 import { uploadAsStream } from '../controllers/files.js';
 import {
@@ -53,12 +58,11 @@ router.post(
   body('username').trim().escape().isLength({ min: 4, max: 50 }),
   body('firstName').trim().escape().isLength({ min: 2, max: 50 }),
   body('lastName').trim().escape().isLength({ min: 2, max: 50 }),
-  body('street').trim().escape().isLength({ min: 4, max: 50 }),
-  body('zip').trim().escape().isLength({ min: 4, max: 10 }),
-  body('city').trim().escape().isLength({ min: 2, max: 50 }),
-  body('birthDay').escape().isInt({ min: 1, max: 31 }),
-  body('birthMonth').escape().isInt({ min: 1, max: 12 }),
-  body('birthYear').escape().isInt({ min: 1900, max: new Date().getFullYear() }),
+  body('username').trim().escape().isLength({ min: 4, max: 50 }),
+  body('email').escape().isEmail().toLowerCase().normalizeEmail(),
+  body('password').escape().isLength({ min: 6, max: 50 }),
+  body('confirmPassword').escape().isLength({ min: 6, max: 50 }),
+
   signup
 );
 
@@ -82,7 +86,10 @@ router.patch(
   body('city').trim().escape().isLength({ min: 2, max: 50 }).optional(),
   body('birthDay').escape().isInt({ min: 1, max: 31 }).optional(),
   body('birthMonth').escape().isInt({ min: 1, max: 12 }).optional(),
-  body('birthYear').escape().isInt({ min: 1900, max: new Date().getFullYear() }).optional(),
+  body('birthYear')
+    .escape()
+    .isInt({ min: 1900, max: new Date().getFullYear() })
+    .optional(),
   body('paused').escape().isBoolean().optional(),
   updateMember
 );
