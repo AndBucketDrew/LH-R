@@ -17,4 +17,4 @@ const fetchAPI = (options = {}) => {
   return axios(axiosConfig);
 };
 
-export { fetchAPI };
+export default fetchAPI;

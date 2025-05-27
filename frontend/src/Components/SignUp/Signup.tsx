@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useForm from "../hooks/useForm";
 import useStore from "../hooks/useStore";
+import { Link } from "react-router-dom";
 
 type UserData = {
   username: string;
@@ -65,7 +66,7 @@ export function Signup() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
-          <CardDescription>Make changes to your account here. Click save when you're done.</CardDescription>
+          <CardDescription>Welcome, Stranger!</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 ">
           <div className="space-y-1">
@@ -93,6 +94,12 @@ export function Signup() {
             <Input id="confirmPassword" name="confirmPassword" type="password" value={formState.confirmPassword} onChange={handleFormChange} />
           </div>
         </CardContent>
+        <div className="text-center text-sm text-gray-600 ">
+          <Link to="/signup" className="text-primary hover:underline">
+            Already have an account! Login here!
+          </Link>
+        </div>
+
         <CardFooter className="flex justify-center">
           <Button onClick={handleSignup}>Sign Up</Button>
         </CardFooter>

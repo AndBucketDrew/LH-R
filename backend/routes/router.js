@@ -89,9 +89,9 @@ router.patch(
 );
 
 router.post(
-  '/members/login',
+  '/login',
+  body('username').escape().optional(),
   body('password').escape().optional(),
-  body('login').escape().optional(),
   login
 );
 

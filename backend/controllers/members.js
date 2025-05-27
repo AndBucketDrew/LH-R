@@ -125,7 +125,7 @@ const login = async (req, res, next) => {
     const data = matchedData(req);
     // Member suchen, wenn nicht vorhanden -> Abbruch mit Fehlermeldung
     const foundMember = await Member.findOne({
-      $or: [{ nickname: data.login }, { email: data.login }],
+      $or: [{ username: data.login }, { email: data.login }],
     });
 
     if (!foundMember) {
@@ -140,7 +140,7 @@ const login = async (req, res, next) => {
     // Hash mit Klartext-Passwort vergleichen
     // wenn keine Überstimmung -> Abbruch mit Fehlermeldung
     if (!checkHash(data.password, foundPassword.password)) {
-      throw new HttpError('Wrong nickname / email or password', 401);
+      throw new HttpError('Wrong username / email or password', 401);
     }
 
     // Token generieren mit ID des Members als Inhalt

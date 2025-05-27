@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { jwtDecode } from "jwt-decode";
 
-import { fetchAPI } from "../../utils/index";
+import fetchAPI from "../../utils/index";
 
 const initalState = {
   loggedInMember: null,
@@ -20,6 +20,7 @@ type StoreState = {
   raiseAlert: (alert: { severity: string; title?: string; text: string }) => void;
   destroyDialog: () => void;
   memberSignup: (data: { username: string; password: string; confirmPassword: string; firstName: string; lastName: string; email: string }) => Promise<boolean>;
+  memberLogin: (data: { username: string; password: string }) => Promise<boolean>;
 };
 
 const useStore = create<StoreState>((set, get) => ({
@@ -101,7 +102,7 @@ const useStore = create<StoreState>((set, get) => ({
 
       get().raiseAlert({
         text: "Success! Have a nice day!",
-        severity: ""
+        severity: "",
       });
 
       return true;
@@ -135,7 +136,7 @@ const useStore = create<StoreState>((set, get) => ({
 
       get().raiseAlert({
         text: "Password changed successfully!",
-        severity: ""
+        severity: "",
       });
 
       return true;
@@ -166,7 +167,7 @@ const useStore = create<StoreState>((set, get) => ({
       await get().memberRefreshMe(); // Refresh the member data after successful update
       get().raiseAlert({
         text: "Profile successfully edited!",
-        severity: ""
+        severity: "",
       });
     } catch (error) {
       console.error(error);
@@ -203,7 +204,7 @@ const useStore = create<StoreState>((set, get) => ({
       get().raiseAlert({
         title: "Successfully Registered",
         text: "Enjoy",
-        severity: ""
+        severity: "",
       });
 
       return true;

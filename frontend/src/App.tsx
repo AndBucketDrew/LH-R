@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Header from "./Components/Header/Header";
 import { Signup } from "./Components/SignUp/Signup";
 import "./App.css";
+import { Login } from "./Components/Login/Login";
 
 function App() {
   const { loggedInMember, memberCheck } = useStore((state) => state);
@@ -32,6 +33,7 @@ function App() {
   const routerNotLoggedIn = (
     <Routes>
       <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
       {/* Add other routes as needed */}
       {/* <Route path="/" element={<Dashboard />} /> */}
       {/* <Route path="/login" element={<Login />} /> */}
