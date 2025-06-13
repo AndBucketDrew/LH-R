@@ -1,5 +1,5 @@
 import { Separator } from '../ui/separator';
-// import { ModeToggle } from "./ModeToggle";
+import { ModeToggle } from '@/ModeToggle/ModeToggle';
 import SearchBar from './SearchBar';
 import AppNameAndLogo from './AppNameAndLogo';
 import AvatarIcon from './AvatarIcon';
@@ -31,8 +31,8 @@ export default function Navbar() {
 
       {/* Right Section */}
       <div className="flex items-center gap-5">
+        <ModeToggle />
         <AvatarIcon />
-        {/* <ModeToggle /> */}
         <Separator orientation="vertical" className="h-5 w-[2px] bg-gray-500" />
       </div>
     </div>
