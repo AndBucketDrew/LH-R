@@ -1,7 +1,15 @@
-import useStore from "@/hooks/useStore";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuGroup } from "../ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import useStore from '@/hooks/useStore';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
+} from '../ui/dropdown-menu';
+import { Link } from 'react-router-dom';
 
 export default function AvatarIcon() {
   const { loggedInMember } = useStore((state) => state);
@@ -10,7 +18,10 @@ export default function AvatarIcon() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="">
-          <AvatarImage src="https://icons.veryicon.com/png/o/internet--web/prejudice/user-128.png" alt="@shadcn" />
+          <AvatarImage
+            src="https://icons.veryicon.com/png/o/internet--web/prejudice/user-128.png"
+            alt="@shadcn"
+          />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
