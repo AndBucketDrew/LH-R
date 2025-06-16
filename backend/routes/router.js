@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body, header } from 'express-validator';
+import { body, header, check } from 'express-validator';
 
 import {
   signup,
@@ -13,6 +13,13 @@ import {
   setNewPassword,
   filterMember,
 } from '../controllers/members.js';
+
+import {
+  addFriend,
+  getAllFriends,
+  getPendingFriendRequests,
+  manageFriendRequest,
+} from '../controllers/friends.js';
 
 import { upload, checkToken } from '../common/middlewares.js';
 
@@ -71,6 +78,30 @@ router.post(
   body('password').escape().isLength({ min: 6, max: 50 }),
   header('reset-token').escape().isLength({ min: 36, max: 36 }),
   setNewPassword
+);
+
+router.post(
+  '/friends/add-friend',
+  checkToken,
+  body('sender').escape().isLength({ min: 20, max: 30 }).isMongoId(),
+  body('recipient').escape().isLength({ min: 20, max: 30 }).isMongoId(),
+  addFriend
+);
+
+router.get(
+  '/friends/pending',
+  checkToken,
+  body('recipient').escape().isLength({ min: 20, max: 30 }),
+  getPendingFriendRequests
+);
+
+router.get('/friends/all-friends', checkToken, getAllFriends);
+
+router.put(
+  '/friends/:senderId',
+  checkToken,
+  [check('senderId').isMongoId(), check('action').isIn(['accept', 'decline'])],
+  manageFriendRequest
 );
 
 export default router;

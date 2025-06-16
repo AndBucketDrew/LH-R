@@ -68,7 +68,7 @@ const checkToken = async (req, res, next) => {
     const member = await Member.findById(id);
 
     if (!member) {
-      throw new HttpError('Invalid token', 401);
+      throw new HttpError('Invalid token!', 401);
     }
 
     // Request um den Eintrag verifiedMember erweitern

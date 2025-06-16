@@ -11,6 +11,10 @@ const membersSchema = new Schema(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
+    pendingFriendRequests: [
+      { type: mongoose.Types.ObjectId, ref: 'Member', default: [] },
+    ],
+    friends: [{ type: mongoose.Types.ObjectId, ref: 'Member', default: [] }],
     // photo: {
     //   cloudinaryPublicId: { type: String, required: true },
     //   url: { type: String, required: true },

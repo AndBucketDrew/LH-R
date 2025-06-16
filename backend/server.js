@@ -55,12 +55,10 @@ app.use(errorHandler);
 
 // Zentrale Fehlerbehandlung, wenn erster Parameter ein Fehlerobjekt ist
 app.use((error, req, res, next) => {
-  // wenn bereits ein Header gesetzt wurde, keinen Response senden sondern
-  // einfach in die nächste Middleware weiterschalten (next)
   if (res.headerSent) {
+    // if a header is uploaded, sending no response and just continue  and no other will be uploaded
     return next(error);
   }
-
   const { errorCode, message } = error;
   res.status(errorCode).json({ message });
 });
