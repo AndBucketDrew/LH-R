@@ -9,18 +9,20 @@ import { Member } from '../models/members.js';
 dotenv.config();
 
 // Middleware multer erzeugen
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads');
-  },
-  filename: (req, file, cb) => {
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, './uploads');
+//   },
+//   filename: (req, file, cb) => {
     // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     // cb(null, file.fieldname + '-' + uniqueSuffix);
-    const extArray = file.mimetype.split('/');
-    const extension = extArray[extArray.length - 1];
-    cb(null, file.fieldname + '-' + Date.now() + '.' + extension);
-  },
-});
+//     const extArray = file.mimetype.split('/');
+//     const extension = extArray[extArray.length - 1];
+//     cb(null, file.fieldname + '-' + Date.now() + '.' + extension);
+//   },
+// });
+
+const storage = multer.memoryStorage(); //Store the file in memory buffer
 
 const limits = {
   fileSize: 1024 * 1024 * 5, // max. 5 MB
