@@ -63,7 +63,7 @@ const getAllFriends = async (req, res, next) => {
     if (!req.verifiedMember) throw new HttpError('Unauthorized', 401);
     const foundMember = await Member.findById(req.verifiedMember._id)
       .select('friends')
-      .populate('friends', 'username firstName');
+      .populate('friends', 'username firstName lastName email');
     if (!foundMember) {
       throw new HttpError('logged in member not found', 404);
     }
