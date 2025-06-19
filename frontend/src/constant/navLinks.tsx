@@ -1,4 +1,8 @@
-import { HouseIcon, CameraPlusIcon, ChatsCircleIcon } from "@phosphor-icons/react";
+import {
+  HouseIcon,
+  CameraPlusIcon,
+  ChatsCircleIcon,
+} from '@phosphor-icons/react';
 
 export const NAV_LINKS = Object.freeze([
   // {
@@ -11,18 +15,18 @@ export const NAV_LINKS = Object.freeze([
   //   ],
   // },
   {
-    label: "Home",
-    to: "/home",
+    label: 'Home',
+    to: '/',
     icon: <HouseIcon size={32} weight="thin" />,
   },
   {
-    label: "Post",
-    to: "/post",
+    label: 'Post',
+    to: '/post',
     icon: <CameraPlusIcon size={32} weight="thin" />,
   },
   {
-    label: "Messages",
-    to: "/messages",
+    label: 'Messages',
+    to: '/messages',
     icon: <ChatsCircleIcon size={32} weight="thin" />,
   },
 ]);

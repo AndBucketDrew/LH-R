@@ -1,5 +1,5 @@
 import useStore from '@/hooks/useStore';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 export default function FriendsBar() {
   const { friends, friendsLoading, friendsError, fetchFriends } = useStore();
@@ -9,7 +9,7 @@ export default function FriendsBar() {
   }, [fetchFriends]);
 
   return (
-    <div className="bg-[--sidebar] text-[--sidebar-foreground] p-2 fixed top-32 right-0 h-[calc(100vh-128px)] w-64 border-l border-[--sidebar-border] z-20">
+    <div className="p-1 h-full border-l border-[--sidebar-border]">
       {friendsLoading ? (
         <div className="text-center font-poppins">Loading...</div>
       ) : friendsError ? (
@@ -21,15 +21,15 @@ export default function FriendsBar() {
           No friends yet
         </div>
       ) : (
-        <div className="flex flex-col gap-1 overflow-y-auto h-full">
+        <div className="flex flex-col overflow-y-auto h-full">
           {friends.map((friend) => (
-            <div
-              key={friend.id}
-              className="flex items-center p-1 font-poppins text-sm"
-            >
-              <span>
+            <div key={friend.id} className="py-2">
+              <button
+                key={friend.id}
+                className="w-full text-left px-3 py-2 text-sm font-poppins bg-transparent hover:bg-[#3a3b3c5f] transition-colors duration-150 rounded-sm"
+              >
                 {friend.firstName} {friend.lastName}
-              </span>
+              </button>
             </div>
           ))}
         </div>
