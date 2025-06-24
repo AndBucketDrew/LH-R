@@ -7,6 +7,7 @@ import { Login } from './Components/Login/Login';
 import './App.css';
 import { Toaster } from 'sonner';
 import Feed from './Components/Feed/Feed';
+import { Post } from './Components/Feed/MainFeed/Post';
 
 function App() {
   const { loggedInMember, memberCheck } = useStore((state) => state);
@@ -20,7 +21,8 @@ function App() {
   const routerLoggedIn = (
     <Routes>
       {/* Add your routes here when ready */}
-      <Route path="/" element={<Feed />} />
+      <Route path="/" element={<Feed />} /> 
+      <Route path="/posts/:id" element={<Post />} /> 
       {/* <Route path="/edit-profile" element={<MemberChangeProfile />} /> */}
       {/* <Route path="/news" element={<NewsPage />} /> */}
       {/* <Route path="/calendar" element={<TablePage />} /> */}

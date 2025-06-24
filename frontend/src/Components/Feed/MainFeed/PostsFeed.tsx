@@ -13,10 +13,10 @@ const PostFeed = () => {
     if (error) return <p className="text-red-500 text-center">An error has occured {error}</p>
 
     return (
-        <div className="max-w-3xl mx-auto mt-6 space-y-6">
+        <div className="max-w-3xl mx-auto space-y-6">
             {allPosts.map((post) => (
-                <div key={post._id} className="bg-white dark:bg-gray-900 rounded-2xl shadow border">
-                    <img src={post.imageUrl} alt="Post" className="w-full h-auto rounded-xl mb-4" />
+                <div key={post._id} className="bg-white dark:bg-gray-900 shadow border">
+                    <img src={post.imageUrl} alt="Post" className="w-full h-auto mb-4" />
                     <h2 className="text-lg mb-2">{post.caption}</h2>
 
                     <p className="mb-1">{post.comments.length} Comments</p>
