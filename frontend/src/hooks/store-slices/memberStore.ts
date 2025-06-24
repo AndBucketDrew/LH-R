@@ -81,7 +81,7 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
     }
   },
 
-  memberSignup: async (
+memberSignup: async (
     data: SignupCredentials | FormData
   ): Promise<boolean> => {
     try {
@@ -140,7 +140,7 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
       localStorage.setItem('lh_member', JSON.stringify(loggedInMember));
 
       return true;
-    } catch (error: unknown) {
+    } catch (error: any) {
       // console.log('was ist error', error);
       toast.error(error.message);
       console.error(error, error.response?.data?.message);

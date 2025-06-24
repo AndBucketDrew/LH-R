@@ -22,7 +22,7 @@ import {
 } from '../controllers/friends.js';
 
 import { upload, checkToken } from '../common/middlewares.js';
-import { addComment, createPost, getPostById } from '../controllers/posts.js';
+import { addComment, createPost, getAllPosts, getPostById } from '../controllers/posts.js';
 
 const router = new Router();
 
@@ -122,5 +122,6 @@ router.post(
 );
 
 router.get('/posts/:id', getPostById);
+router.get('/posts', getAllPosts);
 
 export default router;

@@ -46,6 +46,7 @@ const createPost = async (req, res, next) => {
 };
 
 const toggleLike = async (req, res, next) => {
+
   try {
     const postId = req.params.id;
     const memberId = req.verifiedMember;
@@ -56,6 +57,24 @@ const toggleLike = async (req, res, next) => {
     }
 
     const alreadyLiked = post.likes.includes(memberId);
+
+    try {
+        const postId = req.params.id;
+        const userId = req.verifiedMember;
+
+        const user = await Member.findById(userId);
+
+        const post = await Post.findById(postId);
+        if (!post) { throw new HttpError('Post is not found', 404) };
+
+        const alreadyLiked = post.likes.includes(user);
+
+        if (alreadyLiked) {
+            post.likes.pull(user);
+        } else {
+            post.likes.push(user);
+        }
+
 
     if (alreadyLiked) {
       post.likes.pull(memberId);
@@ -115,8 +134,14 @@ const getPostById = async (req, res, next) => {
       .populate('author', 'username firstName lastName photo')
       .populate('comments.author', 'username firstName lastName photo');
 
+
     if (!post) {
       throw new HttpError('Post is not found', 404);
+
+        res.json(post);
+    } catch (error) {
+        return next(new HttpError(error, error.errorCode || 500));
+
     }
 
     res.status(200).json(post);
@@ -125,4 +150,19 @@ const getPostById = async (req, res, next) => {
   }
 };
 
+
 export { createPost, toggleLike, addComment, getPostById };
+
+const getAllPosts = async (req, res, next) => {
+  console.log(req.verifiedMember);
+  try {
+    const postsList = await Post.find({})
+    res.json(postsList);
+  } catch (error) {
+    return next(new HttpError(error, error.errorCode || 500));
+  }
+};
+
+
+export { createPost, toggleLike, addComment, getPostById, getAllPosts };
+
