@@ -1,8 +1,10 @@
 import FriendsBar from './FriendsBar/FriendsBar';
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
+import { PostFeed } from './MainFeed/PostsFeed';
 const LeftSidebar: FC = () => <div className="bg-card p-4">Left Sidebar</div>;
-const MainFeed: FC = () => <div className="bg-card p-4">Main Feed</div>;
+// const MainFeed: FC = () => <div className="bg-card p-4">Main Feed</div>;
+
 
 export default function Feed() {
   const [isWideEnough, setIsWideEnough] = useState(window.innerWidth >= 1024);
@@ -25,7 +27,7 @@ export default function Feed() {
           !isWideEnough ? 'w-full max-w-[48rem]' : ''
         }`}
       >
-        <MainFeed />
+        <PostFeed />
       </div>
       {isWideEnough && (
         <div className="flex-[0_0_16rem] bg-[--sidebar]">
