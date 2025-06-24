@@ -24,7 +24,7 @@ export interface MemberStore {
   decodedToken: DecodedToken | null;
   alert: Alert | null;
   dialog: any | null; // Replace 'any' with a specific type if possible
-  setMember: (data: Partial<IMember>) => void;
+  // setMember: (data: Partial<IMember>) => void;
   resetMember: () => void;
   searchMembers: (q: string) => Promise<IMember[]>;
   memberSignup: (data: SignupCredentials) => Promise<boolean>;
@@ -55,11 +55,11 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
   members: [],
   ...initialState,
 
-  setMember: (data: Partial<IMember>) => {
-    set((state: MemberStore) => ({
-      member: updateInstance(state.member, data),
-    }));
-  },
+  // setMember: (data: Partial<IMember>) => {
+  //   set((state: MemberStore) => ({
+  //     member: updateInstance(state.member, data),
+  //   }));
+  // },
 
   resetMember: () => set({ member: defaultMember }),
 
