@@ -97,7 +97,7 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
       console.log('success signup');
 
       return true;
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error during signup:', error);
 
       if (error.code === 'ECONNABORTED') {
@@ -148,7 +148,7 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
       localStorage.setItem('lh_member', JSON.stringify(loggedInMember));
 
       return true;
-    } catch (error: unknown) {
+    } catch (error: any) {
       // console.log('was ist error', error);
       toast.error(error.message);
       console.error(error, error.response?.data?.message);

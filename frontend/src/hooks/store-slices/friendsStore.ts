@@ -61,7 +61,7 @@ export const createFriendsSlice = (set: any, get: any): FriendsStore => ({
         friendsLoading: false,
         friendsError: null,
       });
-    } catch (error) {
+    } catch (error: any) {
       set({
         friendsError: error.message || 'Failed to fetch friends!',
         friendsLoading: false,
