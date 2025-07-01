@@ -22,7 +22,12 @@ import {
 } from '../controllers/friends.js';
 
 import { upload, checkToken } from '../common/middlewares.js';
-import { addComment, createPost, getAllPosts, getPostById } from '../controllers/posts.js';
+import {
+  addComment,
+  createPost,
+  getAllPosts,
+  getPostById,
+} from '../controllers/posts.js';
 
 const router = new Router();
 
@@ -54,6 +59,7 @@ router.patch(
 router.patch(
   '/members/:id',
   checkToken,
+  upload.single('photo'),
   body('firstName').trim().escape().isLength({ min: 2, max: 50 }).optional(),
   body('lastName').trim().escape().isLength({ min: 2, max: 50 }).optional(),
   //  TODO: add email and other

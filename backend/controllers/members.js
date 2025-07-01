@@ -253,12 +253,6 @@ const updateMember = async (req, res, next) => {
     // Sicherheitsprüfung: Member kann sich nur selbst wollen
     const { id } = req.params;
 
-    if (!req.verifiedMember.isAdmin) {
-      if (req.verifiedMember._id.toString() !== id) {
-        throw new HttpError('Cant update member', 403);
-      }
-    }
-
     // Feldprüfungen Ergebnis checken
     const result = validationResult(req);
 
