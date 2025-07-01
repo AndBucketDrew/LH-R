@@ -68,14 +68,17 @@ const updateMessage = async (req, res, next) => {
     const data = matchedData(req);
 
     // Nachricht ändern
-    const changedMessage = await Message.findOneAndUpdate({ _id: id }, { ...data }, { new: true });
+    const changedMessage = await Message.findOneAndUpdate(
+      { _id: id },
+      { ...data },
+      { new: true }
+    );
 
     if (!changedMessage) {
       throw new HttpError('Cannot find message', 404);
     }
 
     // TODO: Problem changedMesasge hat nicht die aktuellen Daten
-    console.log(changedMessage);
 
     // Daten der neuen Nachricht an Client senden
     res.json(changedMessage);
@@ -105,7 +108,9 @@ const deleteMessage = async (req, res, next) => {
 const getAllMessages = async (req, res, next) => {
   try {
     // mit leerem Objekt bekommen wir alle Messages
-    const messagesList = await Message.find({}).populate('sender').populate('recipient');
+    const messagesList = await Message.find({})
+      .populate('sender')
+      .populate('recipient');
 
     // Liste aller Nachrichten in JSON-Format an Client senden
     res.json(messagesList);
@@ -123,7 +128,9 @@ const getOneMessage = async (req, res, next) => {
     }
 
     // auf die ID filtern
-    const foundMessage = await Message.find({ _id: id }).populate('sender').populate('recipient');
+    const foundMessage = await Message.find({ _id: id })
+      .populate('sender')
+      .populate('recipient');
 
     // Eine Nachricht in JSON-Format an Client senden
     res.json(foundMessage);
@@ -169,7 +176,8 @@ const getThreads = async (req, res, next) => {
     const threads = [];
     messages.forEach((message) => {
       const index = threads.findIndex(
-        (thread) => String(thread[populateField]) === String(message[populateField])
+        (thread) =>
+          String(thread[populateField]) === String(message[populateField])
       );
 
       if (index < 0) {
@@ -189,7 +197,9 @@ const getThreadMessages = async (req, res, next) => {
   const { sender, recipient } = req.query;
 
   // Nachrichten filter nach sender, recipient
-  const messages = await Message.find({ sender, recipient }).sort({ createdAt: 'asc' });
+  const messages = await Message.find({ sender, recipient }).sort({
+    createdAt: 'asc',
+  });
 
   // Nachrichten als JSON ausgeben
   res.json(messages);
