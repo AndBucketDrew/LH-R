@@ -26,6 +26,7 @@ export interface MemberStore {
   dialog: any | null;
   resetMember: () => void;
   searchMembers: (q: string) => Promise<IMember[]>;
+  getMemberById: (id:string) => Promise<IMember>;
   memberSignup: (data: SignupCredentials) => Promise<boolean>;
   memberLogout: () => void;
   memberLogin: (data: LoginCredentials) => Promise<boolean>;
@@ -74,6 +75,19 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
       return response.data;
     } catch (err) {
       console.error('Error fetching members', err);
+      set({ loading: false });
+    }
+  },
+
+  getMemberById: async (id: string) => {
+    try {
+      set({ loading: true });
+
+      const response = await fetchAPI(`/members/${id}`)
+      set({ member: response.data, loading: false });
+      return response.data
+    } catch (error: any) {
+      console.error('Error fetching single member', error);
       set({ loading: false });
     }
   },
@@ -198,6 +212,7 @@ export const createMemberSlice = (set: any, get: any): MemberStore => ({
       console.log(error);
     }
   },
+
   memberRefreshMe: async () => {
     // LoggedInMember neu holen und in Session Store neu schreiben
     // Memberdaten von API neu holen
