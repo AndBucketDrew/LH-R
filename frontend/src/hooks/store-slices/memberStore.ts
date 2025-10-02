@@ -195,6 +195,7 @@ export const createMemberSlice: StateCreator<
     get().disconnectSocket();
     set({ ...initialState });
   },
+
   memberCheck: async () => {
     try {
       if (get().loggedInMember) {
@@ -211,7 +212,7 @@ export const createMemberSlice: StateCreator<
       }
 
       const decodedToken = jwtDecode<DecodedToken>(token);
-      const { id, exp } = decodedToken;
+      const { exp } = decodedToken;
       const currentDate = Number(new Date()) / 1000;
 
       if (exp < currentDate) {
@@ -322,14 +323,14 @@ export const createMemberSlice: StateCreator<
       }
     });
 
-    socket.on('connect_error', (error) => {
+    socket.on('connect_error', (error: any) => {
       console.error(
         `Socket connection error for user ${loggedInMember._id}: ${error.message}`
       );
       toast.error(`Socket connection failed: ${error.message}`);
     });
 
-    socket.on('disconnect', (reason) => {});
+    socket.on('disconnect', (reason: String) => { console.log('Disconected:', reason)});
 
     set({ socket });
   },

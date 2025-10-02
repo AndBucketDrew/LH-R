@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom'; // Remove BrowserRouter import
+import { Routes, Route, Navigate } from 'react-router-dom'; // Remove BrowserRouter import
 import useStore from './hooks/useStore';
 import Header from './Components/Header/Header';
 import { Signup } from './Components/SignUp/Signup';
@@ -44,6 +44,7 @@ function App() {
     <Routes>
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
       {/* Add other routes as needed */}
       {/* <Route path="/" element={<Feed />} /> */}
       {/* <Route path="/news" element={<NewsPage />} /> */}
