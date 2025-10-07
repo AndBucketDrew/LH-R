@@ -61,9 +61,9 @@ function App() {
   // TEMPORARY ROUTES
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       <Header />
-      <main className="container mx-auto px-6 pt-6 flex-grow">{routes}</main>
+      <main className="container mx-auto px-6 pt-20 flex-grow">{routes}</main>
       <Toaster richColors position="bottom-left" />
     </div>
   );

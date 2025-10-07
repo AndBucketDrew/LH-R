@@ -2,8 +2,6 @@ import { Button } from '../ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '../ui/card';
@@ -49,57 +47,100 @@ export function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center py-20">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>Welcome back!</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2 ">
-          <div className="space-y-1">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              name="username"
-              value={formState.username}
-              onChange={handleFormChange}
-            />
-          </div>
+    <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">
+      {/* Background dark horizontal box */}
+      <div className="bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-between px-12">
+        <div className="max-w-md">
+          <h2 className="text-2xl font-semibold mb-3">
+            Don’t have an account?
+          </h2>
+          <p className="text-sm mb-8 leading-relaxed">
+            Banjo tote bag bicycle rights, High Life sartorial cray craft beer
+            whatever street art fap.
+          </p>
+          <Button
+            asChild
+            variant="outline"
+            className="px-6"
+          >
+            <Link to="/signup">Sign Up</Link>
+          </Button>
+        </div>
+      </div>
 
-          <div className="space-y-1 relative">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={formState.password}
-              onChange={handleFormChange}
-              className="pr-10 w-full" // Ensure padding and full width
-            />
+      {/* Floating login card */}
+      <Card className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg tracking-wide">
+            LOGIN
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <div className="space-y-6">
+            {/* Email */}
+            <div className="flex flex-col space-y-2">
+              <Label htmlFor="username" className="text-sm text-gray-700">
+                Email
+              </Label>
+              <Input
+                id="username"
+                name="username"
+                value={formState.username}
+                onChange={handleFormChange}
+                placeholder="Enter your email"
+                className="border-gray-300 focus-visible:ring-red-300"
+              />
+            </div>
+
+            {/* Password */}
+            <div className="flex flex-col space-y-2 relative">
+              <Label htmlFor="password" className="text-sm text-gray-700">
+                Password
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formState.password}
+                onChange={handleFormChange}
+                placeholder="Enter your password"
+                className="pr-10 border-gray-300 focus-visible:ring-red-300"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={togglePasswordVisibility}
+                className="absolute right-2 top-8 h-8 w-8 p-0 text-gray-500 hover:bg-transparent"
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+
+            {/* Forgot password */}
+            <div className="text-right text-sm">
+              <Link
+                to="/forgot-password"
+                className="hover:text-red-400"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Login button */}
             <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-5 h-8 w-8 p-0 flex items-center justify-center" // Adjusted positioning
-              onClick={togglePasswordVisibility}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={handleLogin}
+              className="uppercase tracking-wide w-full"
             >
-              {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <EyeIcon className="h-5 w-5 text-gray-500" />
-              )}
+              Log In
             </Button>
           </div>
         </CardContent>
-        <div className="text-center text-sm text-gray-600 mt-1">
-          <Link to="/signup" className="text-primary hover:underline">
-            You don't have an account? Sign up here!
-          </Link>
-        </div>
-        <CardFooter className="flex justify-center">
-          <Button onClick={handleLogin}>Login</Button>
-        </CardFooter>
       </Card>
     </div>
   );

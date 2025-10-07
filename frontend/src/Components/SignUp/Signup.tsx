@@ -2,8 +2,6 @@ import { Button } from '../ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '../ui/card';
@@ -16,7 +14,7 @@ import useStore from '../../hooks/useStore';
 import { Link } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 import { toast } from 'sonner';
-import ImageUploader from '../../constant/ImageUploader';
+// import ImageUploader from '../../constant/ImageUploader';
 
 export type UserData = {
   username: string;
@@ -54,10 +52,6 @@ export function Signup() {
       toast.warning('Passwords do not match!');
       return;
     }
-    if (!formState.photo) {
-      toast.warning('Please select a photo!');
-      return;
-    }
 
     const formData = new FormData();
     formData.append('username', formState.username);
@@ -78,119 +72,175 @@ export function Signup() {
     }
   };
 
-  return (
-    <div className="flex justify-center items-center py-20 ">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
-          <CardDescription>Welcome, Stranger!</CardDescription>
+return (
+    <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">
+      {/* Background horizontal box */}
+      <div className="bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-end px-12">
+        <div className="max-w-md">
+          <h2 className="text-2xl font-semibold mb-3">
+            Already have an account?
+          </h2>
+          <p className="text-sm mb-8 leading-relaxed">
+            Banjo tote bag bicycle rights, High Life sartorial cray craft beer
+            whatever street art fap.
+          </p>
+          <Button
+            asChild
+            variant="outline"
+            className="px-6"
+          >
+            <Link to="/login">Log In</Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Floating signup card */}
+      <Card className="absolute left-[10%] top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg tracking-wide">
+            SIGN UP
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 ">
-          <div className="space-y-1">
-            <Label htmlFor="firstName">First Name</Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              value={formState.firstName}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="lastName">Last Name</Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              value={formState.lastName}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              name="username"
-              value={formState.username}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              value={formState.email}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="space-y-1 relative">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={formState.password}
-              onChange={handleFormChange}
-              className="pr-10 w-full"
-            />
+
+        <CardContent>
+          <div className="space-y-4">
+            {/* First Name */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="firstName">
+                First Name
+              </Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                value={formState.firstName}
+                onChange={handleFormChange}
+                placeholder="Enter your first name"
+              />
+            </div>
+
+            {/* Last Name */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="lastName">
+                Last Name
+              </Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                value={formState.lastName}
+                onChange={handleFormChange}
+                placeholder="Enter your last name"
+              />
+            </div>
+
+            {/* Username */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="username">
+                Username
+              </Label>
+              <Input
+                id="username"
+                name="username"
+                value={formState.username}
+                onChange={handleFormChange}
+                placeholder="Enter your username"
+              />
+            </div>
+
+            {/* Email */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="email">
+                Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                value={formState.email}
+                onChange={handleFormChange}
+                placeholder="Enter your email"
+              />
+            </div>
+
+            {/* Password */}
+            <div className="flex flex-col space-y-1.5 relative">
+              <Label htmlFor="password">
+                Password
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formState.password}
+                onChange={handleFormChange}
+                placeholder="Enter your password"
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={togglePasswordVisibility}
+                className="absolute right-2 top-8 h-8 w-8 p-0 hover:bg-transparent"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="flex flex-col space-y-1.5 relative">
+              <Label htmlFor="confirmPassword">
+                Confirm Password
+              </Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={formState.confirmPassword}
+                onChange={handleFormChange}
+                placeholder="Confirm your password"
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={toggleConfirmPasswordVisibility}
+                className="absolute right-2 top-8 h-8 w-8 p-0 hover:bg-transparent"
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+
+            {/* Photo */}
+            {/* <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="photo">
+                Photo
+              </Label>
+              <ImageUploader
+                handleFormChange={handleFormChange}
+                photo={formState.photo}
+              />
+            </div> */}
+
+
+            {/* Signup Button */}
             <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-5 h-8 w-8 p-0 flex items-center justify-center" // Adjusted positioning
-              onClick={togglePasswordVisibility}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={handleSignup}
+              className="uppercase tracking-wide w-full"
             >
-              {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <EyeIcon className="h-5 w-5 text-gray-500" />
-              )}
+              Sign Up
             </Button>
-          </div>
-          <div className="space-y-1 relative">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={formState.confirmPassword}
-              onChange={handleFormChange}
-              className="pr-10 w-full"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-5 h-8 w-8 p-0 flex items-center justify-center" // Adjusted positioning
-              onClick={toggleConfirmPasswordVisibility}
-              aria-label={
-                showConfirmPassword ? 'Hide password' : 'Show password'
-              }
-            >
-              {showConfirmPassword ? (
-                <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-              ) : (
-                <EyeIcon className="h-5 w-5 text-gray-500" />
-              )}
-            </Button>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="photo">Photo</Label>
-            <ImageUploader
-              handleFormChange={handleFormChange}
-              photo={formState.photo}
-            />
           </div>
         </CardContent>
-        <div className="text-center text-sm text-gray-600 ">
-          <Link to="/login" className="text-primary hover:underline">
-            Already have an account! Login here!
-          </Link>
-        </div>
-
-        <CardFooter className="flex justify-center">
-          <Button onClick={handleSignup}>Sign Up</Button>
-        </CardFooter>
       </Card>
     </div>
   );
