@@ -14,6 +14,7 @@ import useStore from '../../hooks/useStore';
 import { Link } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import useEnter from '@/hooks/useEnter';
 // import ImageUploader from '../../constant/ImageUploader';
 
 export type UserData = {
@@ -71,6 +72,8 @@ export function Signup() {
       toast.error('Error while signing up!');
     }
   };
+
+  useEnter(handleSignup);
 
 return (
     <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">

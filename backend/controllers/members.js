@@ -298,14 +298,26 @@ const getMemberByUsername = async (req, res, next) => {
 };
 const filterMember = async (req, res, next) => {
   const { q } = req.query;
+  const member = req.verifiedMember._id;
+  console.log('Verified member:', req.verifiedMember);
   // if(!q) {
   //   throw new HttpError('query is required', 418);
   // }
 
   try {
+    //Maybe index this stuff next time
     const users = await Member.find({
-      username: { $regex: q, $options: 'i' },
-    });
+      $and: [
+        {
+          $or: [
+            { username: { $regex: q, $options: 'i' } },
+            { firstName: { $regex: q, $options: 'i' } },
+            { lastName: { $regex: q, $options: 'i' } },
+          ],
+        },
+        { _id: { $ne: member } }, // exclude logged-in user
+      ],
+    }).select('username firstName lastName photo').limit(5).lean();
 
     res.json(users);
   } catch (err) {
