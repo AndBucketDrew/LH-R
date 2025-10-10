@@ -9,6 +9,7 @@ import useStore from '../../hooks/useStore';
 import { Link } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import useEnter from '@/hooks/useEnter';
 
 type UserData = {
   username: string;
@@ -40,6 +41,8 @@ export function Login() {
       console.log('login failed');
     }
   };
+  
+  useEnter(handleLogin);
 
   return (
     <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">

@@ -45,7 +45,7 @@ const router = new Router();
 
 // TODO: check token einbauen
 router.get('/members', getAllMembers);
-router.get('/members/search', filterMember);
+router.get('/members/search', checkToken, filterMember);
 router.get('/members/:id', getOneMember);
 router.get('/members/username/:username', getMemberByUsername);
 

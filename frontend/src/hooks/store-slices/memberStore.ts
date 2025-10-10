@@ -76,11 +76,13 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
 
   searchMembers: async (q: string) => {
     try {
-      set({ loading: true });
-
+      const token = localStorage.getItem('lh_token');
       const response = await fetchAPI({
         method: 'get',
         url: `/members/search?q=${q}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       // Update state with fetched members and reset loading

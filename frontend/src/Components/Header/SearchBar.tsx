@@ -12,7 +12,7 @@ export default function SearchBar() {
   const [showDropdown, setshowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { searchMembers, members, loading } = useStore((state) => state);
+  const { searchMembers, members } = useStore((state) => state);
 
   useOutsideClick(containerRef, () => setshowDropdown(false));
 
@@ -34,7 +34,7 @@ export default function SearchBar() {
       ref={containerRef}
       className="relative flex-1 min-w-[150px] max-w-[270px]"
     >
-      <IoSearch className="absolute text-2xl left-3 top-2 text-gray-400 " />
+      <IoSearch className="absolute text-2xl left-3 top-2 text-gray-400" />
       <Input
         className={`${bgColor} rounded-3xl h-10 pl-11 shadow-none w-full`}
         placeholder="Search..."
@@ -49,24 +49,37 @@ export default function SearchBar() {
 
       {showDropdown && (
         <div className="absolute mt-2 w-full z-10">
-          {loading && (
-            <div
-              className={`text-sm text-popover-foreground bg-popover shadow rounded p-2`}
-            >
+          {/* {loading && (
+            <div className="text-sm text-popover-foreground bg-popover shadow rounded p-2">
               Loading...
             </div>
-          )}
-          {!loading && query && members.length === 0 && (
+          )} */}
+
+          {query && members.length === 0 && (
             <div className="text-sm text-popover-foreground bg-popover shadow rounded p-2">
               No users found.
             </div>
           )}
+
           {members.length > 0 && (
             <ul className="absolute overflow-auto bg-popover text-popover-foreground shadow rounded-sm max-h-48 w-full">
               {members.map((member: IMember) => (
-                <li key={member._id} className="p-2 hover:bg-gray-100">
-                  <Link to={`/members/${member.username}`}>
-                    {member.username}
+                <li
+                  key={member._id}
+                  className="flex items-center p-2 hover:bg-gray-100"
+                >
+                  <Link to={`/members/${member.username}`} className="flex items-center gap-2 w-full">
+                    <img
+                      src={member.photo?.url || 'https://ik.imagekit.io/LHR/user-octagon-svgrepo-com.svg'}
+                      alt={member.username}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <div className="flex flex-col">
+                      <span className="font-medium">{member.username}</span>
+                      <span className="text-sm text-gray-500">
+                        {member.firstName} {member.lastName}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
