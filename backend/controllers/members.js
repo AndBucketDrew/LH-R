@@ -155,7 +155,7 @@ const login = async (req, res, next) => {
 
     const data = matchedData(req);
     // Member suchen, wenn nicht vorhanden -> Abbruch mit Fehlermeldung
-    const foundMember = await Member.findOne({
+    const verifiedMember = await Member.findOne({
       $or: [{ username: data.username }, { email: data.username }],
     });
 
@@ -371,23 +371,22 @@ const updateMember = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
   try {
     // gibts es den Member? Wenn nein -> Abbruch mit Fehler
-    const { login } = req.body;
-    const foundMember = await Member.findOne({
-      $or: [{ username: login }, { email: login }],
-    });
+    const { email } = req.body;
+    console.log('Incoming body:', req.body);
 
-    if (!foundMember) {
+    const verifiedMember = await Member.findOne({ email });
+    if (!verifiedMember) {
       throw new HttpError('Cannot find member', 404);
     }
 
     // alle bestehenden Reset-Tokens dieses Members löschen
-    await Resettoken.deleteMany({ member: foundMember._id });
+    await Resettoken.deleteMany({ member: verifiedMember._id });
 
     // Token erzeugen mit UUID
     const token = uuidv4();
 
     // Reset Token mit Zeitangabe speichern
-    const newResettoken = new Resettoken({ token, member: foundMember._id });
+    const newResettoken = new Resettoken({ token, member: verifiedMember._id });
     await newResettoken.save();
 
     // Email produzieren (Text mit Link) und raussenden an Email-Adresse
@@ -396,7 +395,7 @@ const resetPassword = async (req, res, next) => {
     }/set-new-password?t=${token}`;
 
     const html = `
-    <p>Lieber ${foundMember.firstName} ${foundMember.lastName}!</p>
+    <p>Lieber ${verifiedMember.firstName} ${verifiedMember.lastName}!</p>
     <p>Mittels nachfolgendem Link können Sie ein neues Passwort setzen!</p>
     <a href="${link}">Link für Password resetten</a>
     <br /><br />
@@ -404,7 +403,7 @@ const resetPassword = async (req, res, next) => {
   `;
 
     const text = `
-  Lieber ${foundMember.firstName} ${foundMember.lastName}!
+  Lieber ${verifiedMember.firstName} ${verifiedMember.lastName}!
 
   Mittels nachfolgendem Link können Sie ein neues Passwort setzen!
 
@@ -415,7 +414,7 @@ const resetPassword = async (req, res, next) => {
 
     await transporter.sendMail({
       from: '"noreply-env <luna40@ethereal.email>', // sender address
-      to: 'bar@example.com, baz@example.com', // list of receivers
+      to: 'aronpozsar@gmail.com', // list of receivers
       subject: 'Kennwort zurücksetzen', // Subject line
       text, // plain text body
       html, // html body
@@ -424,9 +423,10 @@ const resetPassword = async (req, res, next) => {
     // Erfolgsmeldung rausschicken
     res.send('Mail was sent successfully');
   } catch (error) {
-    return next(
-      new HttpError(error, error.errorCode || 500, error.messageArray)
-    );
+    const status = error.errorCode || error.statusCode || 500;
+    return res
+      .status(status)
+      .json({ message: error.message || 'Internal Server Error' });
   }
 };
 
@@ -461,9 +461,9 @@ const setNewPassword = async (req, res, next) => {
     }
 
     // Member überprüfen auf Vorhandensein
-    const foundMember = await Member.findById(foundResettoken.member);
+    const verifiedMember = await Member.findById(foundResettoken.member);
 
-    if (!foundMember) {
+    if (!verifiedMember) {
       throw new HttpError('Cannot find member', 404);
     }
 

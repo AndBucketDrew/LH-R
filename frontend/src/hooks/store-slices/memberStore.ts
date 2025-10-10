@@ -34,6 +34,7 @@ export interface MemberStore {
   memberSignup: (data: SignupCredentials) => Promise<boolean>;
   memberLogout: () => void;
   memberLogin: (data: LoginCredentials) => Promise<boolean>;
+  memberResetPassword: (data: string) => Promise<boolean>;
   memberCheck: () => void;
   memberRefreshMe: () => void;
   connectSocket: () => void;
@@ -195,6 +196,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       const token = localStorage.getItem('lh_token');
       if (!token) {
         console.log('memberCheck: No token found in localStorage');
+        get().memberLogout();
         return;
       }
 
@@ -204,7 +206,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
 
       if (exp < currentDate) {
         console.log('memberCheck: Token expired');
-
         get().memberLogout();
         return;
       }
@@ -311,6 +312,25 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       return false;
     } finally {
       set({ isUpdatingProfile: false });
+    }
+  },
+  memberResetPassword: async (data: any) => {
+    try {
+      await fetchAPI({
+        method: 'post',
+        url: '/members/reset-password',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      toast.success('Password updated successfully!');
+      return true;
+    } catch (error: any) {
+      console.error('error in updating profile', error);
+      toast.error(error.response?.data?.message || error.message || 'Update failed');
+      return false;
     }
   },
 

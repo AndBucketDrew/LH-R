@@ -14,24 +14,27 @@ import { Post } from './Components/Feed/MainFeed/Post';
 import Profile from './Components/Profile/Profile';
 import MessagePage from './Components/MessagePage/MessagePage';
 import MemberProfile from './Components/Profile/MemberProfile';
+import { ResetPassword } from './Components/ForgotPassword/ResetPassword';
 
 function App() {
   const { loggedInMember, memberCheck, showAddPost, setShowAddPost } = useStore((state) => state);
 
   // Check if the user is logged in on every page load
   useEffect(() => {
-    // 1. Run the check immediately on mount
-    memberCheck();
-
-    // 2. Set up a timer to run memberCheck periodically
-    const intervalId = setInterval(() => {
-      // This function executes your token check and logs out if expired
+    if (loggedInMember) {
+      // 1. Run the check immediately on mount
       memberCheck();
-    }, 10000);
 
-    // 3. Clean up the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, [memberCheck]);
+      // 2. Set up a timer to run memberCheck periodically
+      const intervalId = setInterval(() => {
+        // This function executes your token check and logs out if expired
+        memberCheck();
+      }, 10000);
+
+      // 3. Clean up the interval when the component unmounts
+      return () => clearInterval(intervalId);
+    }
+  }, [memberCheck, loggedInMember]);
 
   // Define routes for logged-in users
   const routerLoggedIn = (
@@ -56,6 +59,7 @@ function App() {
     <Routes>
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
       {/* Add other routes as needed */}
       {/* <Route path="/" element={<Feed />} /> */}

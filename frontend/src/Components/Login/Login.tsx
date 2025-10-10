@@ -111,7 +111,7 @@ export function Login() {
 
             {/* Forgot password */}
             <div className="text-right text-sm">
-              <Link to="/forgot-password" className="hover:text-red-400">
+              <Link to="/reset-password" className="hover:text-red-400">
                 Forgot password?
               </Link>
             </div>
