@@ -4,17 +4,21 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useForm from '../../hooks/useForm';
+import { useForm } from 'react-hook-form';
 import useStore from '../../hooks/useStore';
 import { Link } from 'react-router-dom';
+import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from '../ui/form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import useEnter from '@/hooks/useEnter';
 
-type UserData = {
-  username: string;
-  password: string;
-};
+const FormSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  password: z.string().min(1, 'Password is required'),
+});
+
 export function Login() {
   const { memberLogin } = useStore((state) => state);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,26 +26,33 @@ export function Login() {
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-  const { formState, handleFormChange } = useForm<UserData>({
-    username: '',
-    password: '',
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
   });
 
-  const handleLogin = async () => {
+  const { setError } = form;
+
+  const handleLogin = form.handleSubmit(async (values) => {
     // Attempt login
-    const result = await memberLogin(formState);
+    const result = await memberLogin(values);
 
     if (result) {
       // Navigate to dashboard on successful login
       toast.success('Logged in succesfully! Enjoy!');
       navigate('/');
     } else {
-      // If login fails, show an alert using CustomAlert
-      toast.error('Oops! Invalid credentials!');
-      console.log('login failed');
+      const { alert } = useStore.getState();
+      setError('root', {
+        type: 'manual',
+        message: alert?.description,
+      });
     }
-  };
-  
+  });
+
   useEnter(handleLogin);
 
   return (
@@ -67,63 +78,77 @@ export function Login() {
         </CardHeader>
 
         <CardContent>
-          <div className="space-y-6">
-            {/* Email */}
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="username" className="text-sm text-gray-700">
-                Username
-              </Label>
-              <Input
-                id="username"
+          <Form {...form}>
+            <form onSubmit={handleLogin} className="space-y-6">
+              {/* Username */}
+              <FormField
+                control={form.control}
                 name="username"
-                value={formState.username}
-                onChange={handleFormChange}
-                placeholder="Enter your username"
-                className="border-gray-300 focus-visible:ring-red-300"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="flex flex-col space-y-2 relative">
-              <Label htmlFor="password" className="text-sm text-gray-700">
-                Password
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formState.password}
-                onChange={handleFormChange}
-                placeholder="Enter your password"
-                className="pr-10 border-gray-300 focus-visible:ring-red-300"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={togglePasswordVisibility}
-                className="absolute right-2 top-8 h-8 w-8 p-0 text-gray-500 hover:bg-transparent"
-              >
-                {showPassword ? (
-                  <EyeSlashIcon className="h-5 w-5" />
-                ) : (
-                  <EyeIcon className="h-5 w-5" />
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm text-gray-700">Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your username"
+                        className={`border-gray-300 focus-visible:ring-red-300 ${form.formState.errors.root ? 'border border-red-500 shake' : ''
+                          }`}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
+
+              {/* Password */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel className="text-sm text-gray-700">Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Enter your password"
+                          className={`pr-10 border-gray-300 focus-visible:ring-red-300 ${form.formState.errors.root ? 'border border-red-500 shake' : ''
+                            }`}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={togglePasswordVisibility}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-gray-500 hover:bg-transparent"
+                        >
+                          {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.formState.errors.root && (
+                <p className="text-red-500 text-sm">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
+
+              <div className="text-right text-sm">
+                <Link to="/reset-password" className="hover:text-red-400">
+                  Forgot password?
+                </Link>
+              </div>
+
+              <Button type="submit" className="uppercase tracking-wide w-full">
+                Log In
               </Button>
-            </div>
-
-            {/* Forgot password */}
-            <div className="text-right text-sm">
-              <Link to="/reset-password" className="hover:text-red-400">
-                Forgot password?
-              </Link>
-            </div>
-
-            {/* Login button */}
-            <Button onClick={handleLogin} className="uppercase tracking-wide w-full">
-              Log In
-            </Button>
-          </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

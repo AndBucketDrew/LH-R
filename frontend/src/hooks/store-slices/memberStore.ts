@@ -177,9 +177,15 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       get().connectSocket();
       return true;
     } catch (error: any) {
-      // console.log('was ist error', error);
-      toast.error(error.message);
       console.error(error, error.response?.data?.message);
+      set({
+        alert: {
+          type: 'error',
+          title: 'Login Failed',
+          description: error?.response?.data?.message || 'Something went wrong.',
+          duration: 1000,
+        },
+      });
 
       return false;
     }
