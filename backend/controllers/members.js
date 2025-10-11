@@ -155,7 +155,7 @@ const login = async (req, res, next) => {
 
     const data = matchedData(req);
     // Member suchen, wenn nicht vorhanden -> Abbruch mit Fehlermeldung
-    const verifiedMember = await Member.findOne({
+    const foundMember = await Member.findOne({
       $or: [{ username: data.username }, { email: data.username }],
     });
 
@@ -386,19 +386,19 @@ const resetPassword = async (req, res, next) => {
     const { email } = req.body;
     console.log('Incoming body:', req.body);
 
-    const verifiedMember = await Member.findOne({ email });
-    if (!verifiedMember) {
+    const foundMember = await Member.findOne({ email });
+    if (!foundMember) {
       throw new HttpError('Cannot find member', 404);
     }
 
     // alle bestehenden Reset-Tokens dieses Members löschen
-    await Resettoken.deleteMany({ member: verifiedMember._id });
+    await Resettoken.deleteMany({ member: foundMember._id });
 
     // Token erzeugen mit UUID
     const token = uuidv4();
 
     // Reset Token mit Zeitangabe speichern
-    const newResettoken = new Resettoken({ token, member: verifiedMember._id });
+    const newResettoken = new Resettoken({ token, member: foundMember._id });
     await newResettoken.save();
 
     // Email produzieren (Text mit Link) und raussenden an Email-Adresse
@@ -407,7 +407,7 @@ const resetPassword = async (req, res, next) => {
     }/set-new-password?t=${token}`;
 
     const html = `
-    <p>Lieber ${verifiedMember.firstName} ${verifiedMember.lastName}!</p>
+    <p>Lieber ${foundMember.firstName} ${foundMember.lastName}!</p>
     <p>Mittels nachfolgendem Link können Sie ein neues Passwort setzen!</p>
     <a href="${link}">Link für Password resetten</a>
     <br /><br />
@@ -415,7 +415,7 @@ const resetPassword = async (req, res, next) => {
   `;
 
     const text = `
-  Lieber ${verifiedMember.firstName} ${verifiedMember.lastName}!
+  Lieber ${foundMember.firstName} ${foundMember.lastName}!
 
   Mittels nachfolgendem Link können Sie ein neues Passwort setzen!
 
@@ -473,9 +473,9 @@ const setNewPassword = async (req, res, next) => {
     }
 
     // Member überprüfen auf Vorhandensein
-    const verifiedMember = await Member.findById(foundResettoken.member);
+    const foundMember = await Member.findById(foundResettoken.member);
 
-    if (!verifiedMember) {
+    if (!foundMember) {
       throw new HttpError('Cannot find member', 404);
     }
 

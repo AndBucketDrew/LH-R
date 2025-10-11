@@ -21,7 +21,7 @@ function App() {
 
   // Check if the user is logged in on every page load
   useEffect(() => {
-    if (loggedInMember) {
+    // if (loggedInMember) {
       // 1. Run the check immediately on mount
       memberCheck();
 
@@ -33,8 +33,8 @@ function App() {
 
       // 3. Clean up the interval when the component unmounts
       return () => clearInterval(intervalId);
-    }
-  }, [memberCheck, loggedInMember]);
+    // }
+  }, [memberCheck,]);
 
   // Define routes for logged-in users
   const routerLoggedIn = (
