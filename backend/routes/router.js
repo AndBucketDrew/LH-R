@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body, header, check } from 'express-validator';
+import { body, check, query } from 'express-validator';
 
 import {
   signup,
@@ -97,7 +97,6 @@ router.post('/members/reset-password', resetPassword);
 router.post(
   '/members/set-new-password',
   body('password').escape().isLength({ min: 6, max: 50 }),
-  header('reset-token').escape().isLength({ min: 36, max: 36 }),
   setNewPassword
 );
 

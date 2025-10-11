@@ -35,6 +35,7 @@ export interface MemberStore {
   memberLogout: () => void;
   memberLogin: (data: LoginCredentials) => Promise<boolean>;
   memberResetPassword: (data: string) => Promise<boolean>;
+  memberSetNewPassword: (data: string) => Promise<boolean>;
   memberCheck: () => void;
   memberRefreshMe: () => void;
   connectSocket: () => void;
@@ -81,8 +82,8 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
         method: 'get',
         url: `/members/search?q=${q}`,
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // Update state with fetched members and reset loading
@@ -316,18 +317,16 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       set({ isUpdatingProfile: false });
     }
   },
+
   memberResetPassword: async (data: any) => {
     try {
       await fetchAPI({
         method: 'post',
         url: '/members/reset-password',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        data,
       });
 
-      toast.success('Password updated successfully!');
+      toast.success('Email sent!');
       return true;
     } catch (error: any) {
       console.error('error in updating profile', error);
@@ -335,7 +334,26 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       return false;
     }
   },
+  memberSetNewPassword: async (data: any) => {
+    const { t: token, password } = data;
 
+    try {
+      await fetchAPI({
+        method: 'post',
+
+        url: `/members/set-new-password?t=${token}`,
+
+        data: { password },
+      });
+
+      toast.success('New Password set successfully!');
+      return true;
+    } catch (error: any) {
+      console.error('error in updating profile', error);
+      toast.error(error.response?.data?.message || error.message || 'Update failed');
+      return false;
+    }
+  },
   connectSocket: () => {
     const { loggedInMember } = get();
     if (!loggedInMember) {

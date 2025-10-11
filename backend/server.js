@@ -28,12 +28,11 @@ app.use(
     },
   })
 );
+// JSON parser
+app.use(express.json());
 
 // Form body parser
 app.use(express.urlencoded({ extended: true }));
-
-// JSON parser
-app.use(express.json());
 
 // Statische Websites ausgeben
 app.use(express.static('www'));

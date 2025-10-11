@@ -6,28 +6,30 @@ import { useState } from 'react';
 import useForm from '../../hooks/useForm';
 import useStore from '../../hooks/useStore';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 
 type UserData = {
-  email: string;
+  password: string;
 };
 
-export function ResetPassword() {
-  const { memberResetPassword } = useStore((state) => state);
+export function SetNewPassword() {
+  const { memberSetNewPassword } = useStore((state) => state);
   const [emailSent, setEmailSent] = useState(false);
-  const { formState, handleFormChange } = useForm<UserData>({ email: '' });
+  const { formState, handleFormChange } = useForm<UserData>({ password: '' });
+  const [searchParams] = useSearchParams();
 
-  const handleReset = async () => {
-    if (!formState.email) {
-      toast.warning('Please enter your email address.');
-      return;
-    }
+  const token = searchParams.get('t');
 
-    try {
-      await memberResetPassword({ email: formState.email });
-      toast.success('Password reset link sent! Check your email.');
-      setEmailSent(true);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to send reset link');
+  const handleSetNewPassword = async () => {
+    // A crucial debugging step:
+    console.log('Token extracted from URL:', token);
+
+    // This is the call on line 37 that ultimately leads to memberSetNewPassword
+    if (token) {
+      await memberSetNewPassword({
+        password: formState.password,
+        t: token, // Pass the actual token string
+      });
     }
   };
 
@@ -37,31 +39,30 @@ export function ResetPassword() {
         <>
           <div className="bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-between px-12">
             <div className="max-w-md">
-              <h2 className="text-2xl font-semibold mb-3">Forgot your password?</h2>
+              <h2 className="text-2xl font-semibold mb-3">Set your new password!</h2>
               <p className="text-sm mb-8 leading-relaxed">
-                No problem! Just enter your email, we will send you a link where you can reset your
-                password!
+                Don't worry, you won't lose your account now!
               </p>
             </div>
           </div>
 
           <Card className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg tracking-wide">Enter your Email Address</CardTitle>
+              <CardTitle className="text-lg tracking-wide">Enter new password</CardTitle>
             </CardHeader>
 
             <CardContent>
               <div className="space-y-6">
                 <div className="flex flex-col space-y-2">
-                  <Label htmlFor="email" className="text-sm text-gray-700">
-                    Email
+                  <Label htmlFor="password" className="text-sm text-gray-700">
+                    Password
                   </Label>
                   <Input
-                    id="email"
-                    name="email"
-                    value={formState.email}
+                    id="password"
+                    name="password"
+                    value={formState.password}
                     onChange={handleFormChange}
-                    placeholder="Enter your email"
+                    placeholder="Enter your password"
                     className="border-gray-300 focus-visible:ring-red-300"
                   />
                 </div>
@@ -70,14 +71,14 @@ export function ResetPassword() {
                   onClick={async () => {
                     setEmailSent(true); // always show success UI
                     try {
-                      await handleReset(); // still perform request
+                      await handleSetNewPassword(); // still perform request
                     } catch (err) {
                       console.error(err); // never expose error to user
                     }
                   }}
                   className="uppercase tracking-wide w-full"
                 >
-                  Send Reset Link
+                  Change Password
                 </Button>
               </div>
             </CardContent>
@@ -85,8 +86,8 @@ export function ResetPassword() {
         </>
       ) : (
         <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">Check your email</h2>
-          <p className="text-sm text-gray-600">We’ve sent a link to reset your password.</p>
+          <h2 className="text-2xl font-semibold mb-2">Password changed!</h2>
+          <p className="text-sm text-gray-600">Log in with your new password!</p>
         </div>
       )}
     </div>

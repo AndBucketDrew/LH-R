@@ -317,7 +317,10 @@ const filterMember = async (req, res, next) => {
         },
         { _id: { $ne: member } }, // exclude logged-in user
       ],
-    }).select('username firstName lastName photo').limit(5).lean();
+    })
+      .select('username firstName lastName photo')
+      .limit(5)
+      .lean();
 
     res.json(users);
   } catch (err) {
@@ -402,9 +405,7 @@ const resetPassword = async (req, res, next) => {
     await newResettoken.save();
 
     // Email produzieren (Text mit Link) und raussenden an Email-Adresse
-    const link = `http://${req.hostname}:${
-      process.env.port || 80
-    }/set-new-password?t=${token}`;
+    const link = `${process.env.FRONTEND_URL}/set-new-password?t=${token}`;
 
     const html = `
     <p>Lieber ${foundMember.firstName} ${foundMember.lastName}!</p>
@@ -444,20 +445,25 @@ const resetPassword = async (req, res, next) => {
 
 const setNewPassword = async (req, res, next) => {
   try {
-    // Express Validator Überprüfung checken
+    // 1. Express Validator check (only for the password now)
     const result = validationResult(req);
 
     if (result.errors.length > 0) {
       const errors = result.array();
       throw handleValidationErrors(errors);
-    }
+    } // 2. Get password from body (via matchedData)
 
-    const data = matchedData(req);
+    const { password } = matchedData(req);
 
-    // Token aus dem Header auslesen
-    const { password, 'reset-token': token } = data;
+    // 3. Get token directly from the URL query
+    const token = req.query.t;
 
-    // Token in Resettoken suchen, wenn nicht vorhanden oder abgelaufen -> Abbruch
+    // 4. Manually check if the token exists and has the correct length
+    if (!token || typeof token !== 'string' || token.length !== 36) {
+      // This handles both 'undefined' (which has length 9) and a missing token.
+      throw new HttpError('Invalid or missing reset token', 400);
+    } // Token in Resettoken suchen, wenn nicht vorhanden oder abgelaufen -> Abbruch
+
     const foundResettoken = await Resettoken.findOne({ token });
 
     if (!foundResettoken) {
