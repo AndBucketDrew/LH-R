@@ -100,7 +100,7 @@ const signup = async (req, res, next) => {
 
     await transporter.sendMail({
       from: 'noreply.env <noreply.envv@gmail.com>', // sender address
-      to: `aronpozsar@gmail.com`, // list of receivers
+      to: `${req.body.email}`, // list of receivers
       subject: `Welcome, ${req.body.firstName}!`, // Subject line
       text: signupText, // plain text body
       html: signupHtml, // html body
@@ -395,14 +395,14 @@ const resetPassword = async (req, res, next) => {
     ResetPasswordHtml = ResetPasswordHtml.replace(
       '[FIRST_NAME] [LAST_NAME]',
       `${foundMember.firstName} ${foundMember.lastName}`
-    );
+    ).replace('[LINK]', link);
     ResetPasswordText = ResetPasswordText.replace('[FIRST_NAME]', foundMember.lastName)
       .replace('[LAST_NAME]', foundMember.firstName)
       .replace('[LINK]', link);
 
     await transporter.sendMail({
       from: 'DevLink <noreply.envv@gmail.com>', // sender address
-      to: 'aronpozsar@gmail.com', // list of receivers
+      to: `${foundMember.email}`, // list of receivers
       subject: 'Password Reset', // Subject line
       text: ResetPasswordText, // plain text body
       html: ResetPasswordHtml, // html body
