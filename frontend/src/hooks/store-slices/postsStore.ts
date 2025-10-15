@@ -10,6 +10,7 @@ export interface PostsStore {
   error: string | null;
   allPosts: IPost[];
   myPosts: IPost[];
+  friendsPosts: IPost[];
   memberPosts: IPost[];
   showAddPost: boolean;
 
@@ -18,6 +19,7 @@ export interface PostsStore {
   fetchMyPosts: () => Promise<void>;
   fetchMemberPosts: (username: string) => Promise<void>;
   fetchAllPosts: () => Promise<void>;
+  fetchFriendsPosts: () => Promise<void>;
   uploadPost: (data: IPost) => Promise<boolean>;
   toggleLike: (postId: string) => Promise<void>;
   addComment: (postId: string, data: { text: string }) => Promise<void>;
@@ -29,13 +31,11 @@ const initialState = {
   error: null,
   allPosts: [],
   myPosts: [],
+  friendsPosts: [],
   memberPosts: [],
 };
 
-const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (
-  set,
-  get
-): PostsStore => ({
+const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get): PostsStore => ({
   showAddPost: false,
   setShowAddPost: (value) => set({ showAddPost: value }),
   ...initialState,
@@ -89,6 +89,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (
   fetchAllPosts: async () => {
     try {
       set({ loading: true });
+
       const response = await fetchAPI({ url: '/posts' });
       set({ allPosts: response.data, loading: false });
     } catch (error: any) {
@@ -99,9 +100,21 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (
 
   fetchFriendsPosts: async () => {
     try {
-            set({ loading: true });
+      set({ loading: true });
+      const token = localStorage.getItem('lh_token');
+      if (!token) throw new Error('User not authenticated');
 
-    } catch (error) {}
+      const response = await fetchAPI({
+        url: '/friends/friendsPosts',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      set({ friendsPosts: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      toast.error(error.response?.data?.message || 'Failed to fetch posts');
+    }
   },
 
   uploadPost: async (data: IPost): Promise<boolean> => {
@@ -150,9 +163,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (
 
         return {
           allPosts: state.allPosts.map(toggleLikes),
-          currentPost: state.currentPost
-            ? toggleLikes(state.currentPost)
-            : state.currentPost,
+          currentPost: state.currentPost ? toggleLikes(state.currentPost) : state.currentPost,
         };
       });
 
@@ -186,16 +197,13 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (
           post._id === postId
             ? {
                 ...post,
-                likes:
-                  state.allPosts.find((p) => p._id === postId)?.likes || [],
+                likes: state.allPosts.find((p) => p._id === postId)?.likes || [],
               }
             : post;
 
         return {
           allPosts: state.allPosts.map(revertLikes),
-          currentPost: state.currentPost
-            ? revertLikes(state.currentPost)
-            : state.currentPost,
+          currentPost: state.currentPost ? revertLikes(state.currentPost) : state.currentPost,
         };
       });
     }
@@ -223,10 +231,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (
           state.currentPost?._id === postId
             ? {
                 ...state.currentPost,
-                comments: [
-                  ...state.currentPost.comments,
-                  response.data.comment,
-                ],
+                comments: [...state.currentPost.comments, response.data.comment],
               }
             : state.currentPost,
       }));

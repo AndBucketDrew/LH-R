@@ -12,6 +12,10 @@ a,
 [role='menuitem'] {
   cursor: pointer !important;
 }
+
+html {
+  height: 100%;
+}
 body {
   font-family: 'Poppins', sans-serif;
   background: var(--background);
@@ -191,11 +195,21 @@ body {
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .shake {

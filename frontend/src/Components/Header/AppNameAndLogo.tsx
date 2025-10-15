@@ -7,19 +7,15 @@ export default function AppNameAndLogo() {
       {/* Logo with Link */}
       <Link to="/">
         <div className="flex justify-center items-center">
-          <img
-            src={Logo}
-            alt="Logo"
-            className="min-h-6 min-w-6 max-h-6 max-w-6 "
-          />
+          <img src={Logo} alt="Logo" className="min-h-6 min-w-6 max-h-6 max-w-6 " />
+        </div>
+        {/* Container for the name */}
+        <div className="flex gap-1 items-center text-xl">
+          <span>
+            Dev<strong>Link</strong>
+          </span>
         </div>
       </Link>
-
-      {/* Container for the name */}
-      <div className="flex gap-1 items-center text-xl">
-        <span className="font-bold">LH-R</span>
-        <span>Demo</span>
-      </div>
     </div>
   );
 }

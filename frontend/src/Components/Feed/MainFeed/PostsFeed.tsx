@@ -4,14 +4,21 @@ import { Link } from 'react-router-dom';
 import { Heart, MessageSquare } from 'lucide-react';
 
 const PostFeed = () => {
-  const { allPosts, loading, error, fetchAllPosts, toggleLike, addComment, loggedInMember } =
-    useStore((state) => state);
+  const {
+    friendsPosts,
+    loading,
+    error,
+    fetchFriendsPosts,
+    toggleLike,
+    addComment,
+    loggedInMember,
+  } = useStore((state) => state);
 
   const [commentInputs, setCommentInputs] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    fetchAllPosts();
-  }, [fetchAllPosts]);
+    fetchFriendsPosts();
+  }, [fetchFriendsPosts]);
 
   const handleCommentChange = (postId: string, value: string) => {
     setCommentInputs((prev) => ({ ...prev, [postId]: value }));
@@ -32,9 +39,23 @@ const PostFeed = () => {
   if (loading) return <p className="text-center text-foreground">Loading...</p>;
   if (error) return <p className="text-destructive text-center">An error has occurred: {error}</p>;
 
+  if (friendsPosts.length === 0) {
+    return (
+      <div className="max-w-[37.5rem] mx-auto p-6 text-center bg-card shadow-lg rounded-lg border border-border">
+        <h2 className="text-xl font-semibold text-foreground mb-3">Your feed is empty! 😔</h2>
+        <p className="text-muted-foreground mb-4">
+          It looks like you haven't made any friends yet, or they haven't posted anything.
+        </p>
+        <p className="text-primary hover:underline">
+          <Link to="/discover">Go to the Discover page to find and follow new members!</Link>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[37.5rem] mx-auto space-y-6 px-4">
-      {[...allPosts].reverse().map((post) => (
+      {[...friendsPosts].reverse().map((post) => (
         <div
           key={post._id}
           className="bg-card dark:bg-card shadow-lg rounded-lg border border-border overflow-hidden"
@@ -93,9 +114,8 @@ const PostFeed = () => {
               <span className="flex-1">{post.caption}</span>
             </p>
           </div>
-          {/* Comments */}{' '}
+          {/* Comments */}
           <div className="px-3 pb-2 max-h-60 overflow-y-auto">
-            {' '}
             {post?.comments?.length > 0 ? (
               [...post.comments]
                 .slice(-3)

@@ -5,19 +5,15 @@ import AppNameAndLogo from './AppNameAndLogo';
 import AvatarIcon from './AvatarIcon';
 import useStore from '@/hooks/useStore';
 import { NavLink } from 'react-router-dom';
-import {
-  HouseIcon,
-  CameraPlusIcon,
-  ChatsCircleIcon,
-} from '@phosphor-icons/react';
+import { HouseIcon, CameraPlusIcon, ChatsCircleIcon } from '@phosphor-icons/react';
 
 export default function Navbar() {
   const { setShowAddPost, loggedInMember } = useStore((state) => state);
   if (!loggedInMember) {
     return (
       <div className="font-poppins fixed top-0 left-0 w-full p-6 flex justify-between items-center bg-white dark:bg-gray-900 shadow-md z-10">
-          <AppNameAndLogo />
-          <ModeToggle />
+        <AppNameAndLogo />
+        <ModeToggle />
       </div>
     );
   }
@@ -35,10 +31,7 @@ export default function Navbar() {
           <HouseIcon size={32} weight="thin" />
         </NavLink>
 
-        <button
-          onClick={() => setShowAddPost(true)}
-          className="hover:text-primary"
-        >
+        <button onClick={() => setShowAddPost(true)} className="hover:text-primary">
           <CameraPlusIcon size={32} weight="thin" />
         </button>
 

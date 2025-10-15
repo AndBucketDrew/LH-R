@@ -7,6 +7,7 @@ import type { MemberStore } from './store-slices/memberStore.ts';
 import type { FriendsStore } from './store-slices/friendsStore.ts';
 import { createPostsSlice, type PostsStore } from './store-slices/postsStore.ts';
 import { jwtDecode } from 'jwt-decode';
+
 export type StoreState = MemberStore &
   FriendsStore &
   PostsStore &
@@ -23,6 +24,15 @@ interface DecodedToken {
   [key: string]: any;
 }
 
+const initialState = {
+  loggedInMember: null,
+  selectedUser: null,
+  friends: [],
+  pending: [],
+  token: null,
+  decodedToken: null,
+};
+
 const useStore = create<StoreState>()(
   persist(
     (set, get, ...args) => ({
@@ -38,12 +48,7 @@ const useStore = create<StoreState>()(
         const token = get().token;
         if (!token) {
           set({
-            loggedInMember: null,
-            selectedUser: null,
-            friends: [],
-            pending: [],
-            token: null,
-            decodedToken: null,
+            ...initialState,
           });
           return false;
         }
@@ -51,24 +56,14 @@ const useStore = create<StoreState>()(
           const decoded: DecodedToken = jwtDecode(token);
           if (decoded.exp < Math.floor(Date.now() / 1000)) {
             set({
-              loggedInMember: null,
-              selectedUser: null,
-              friends: [],
-              pending: [],
-              token: null,
-              decodedToken: null,
+              ...initialState,
             });
             return false;
           }
           return true;
         } catch {
           set({
-            loggedInMember: null,
-            selectedUser: null,
-            friends: [],
-            pending: [],
-            token: null,
-            decodedToken: null,
+            ...initialState,
           });
           return false;
         }
@@ -84,17 +79,16 @@ const useStore = create<StoreState>()(
         decodedToken: state.decodedToken,
       }),
       onRehydrateStorage: () => (state) => {
-        if (!state) return;
-        state.setHasHydrated(true);
-        if (state.loggedInMember?._id) {
-          if (!state.socket?.connected) {
-            state.connectSocket();
+        state?.setHasHydrated(true);
+        if (state?.loggedInMember?._id) {
+          if (!state?.socket?.connected) {
+            state?.connectSocket();
           }
-          if (state.selectedUser?._id) {
+          if (state?.selectedUser?._id) {
             state
-              .getMessages(state.selectedUser._id)
+              .getMessages(state?.selectedUser._id)
               .then(() => {
-                state.subscribeToMessages();
+                state?.subscribeToMessages();
               })
               .catch((err) => console.error('onRehydrateStorage: Fetch error:', err));
           } else {
@@ -102,7 +96,7 @@ const useStore = create<StoreState>()(
           }
         } else {
           console.log('onRehydrateStorage: No loggedInMember, checking session');
-          state.memberCheck();
+          state?.memberCheck();
         }
       },
     }

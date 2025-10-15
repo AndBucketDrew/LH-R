@@ -35,11 +35,7 @@ import {
   getMemberPosts,
   getFriendsPosts,
 } from '../controllers/posts.js';
-import {
-  getMessages,
-  getUsersForSidebar,
-  sendMessage,
-} from '../controllers/messages.js';
+import { getMessages, getUsersForSidebar, sendMessage } from '../controllers/messages.js';
 
 const router = new Router();
 
@@ -82,10 +78,7 @@ router.patch(
 
 router.post(
   '/members/login',
-  body('username')
-    .escape()
-    .notEmpty()
-    .withMessage('Username or email is required'),
+  body('username').escape().notEmpty().withMessage('Username or email is required'),
   body('password').escape().notEmpty().withMessage('Password is required'),
   login
 );
@@ -113,6 +106,7 @@ router.get(
   body('recipient').escape().isLength({ min: 20, max: 30 }),
   getPendingFriendRequests
 );
+router.get('/friends/friendsPosts', checkToken, getFriendsPosts); // changed from /posts/friendsPosts because casterror, stupid
 
 router.get('/friends/all-friends', checkToken, getAllFriends);
 
@@ -136,7 +130,7 @@ router.post(
 );
 
 router.post(
-  '/posts/:id/comments',
+  '/posts/:id/comments', // 2. POST route with a specific dynamic structure
   checkToken,
   upload.none(),
   body('text').trim().escape().isLength({ min: 1, max: 500 }),
@@ -144,14 +138,12 @@ router.post(
 );
 router.get('/posts/myPosts', checkToken, getMyPosts);
 router.get('/posts/memberPosts/:username', getMemberPosts);
-router.get('/posts/friendPosts', getFriendsPosts);
 router.put('/posts/:id/likes', checkToken, toggleLike);
 router.get('/posts/:id', getPostById);
 router.get('/posts', getAllPosts);
 
 router.get('/messages/users', checkToken, getUsersForSidebar);
 router.get('/messages/:userId', checkToken, getMessages);
-
 router.post(
   '/messages/send/:id',
   checkToken,

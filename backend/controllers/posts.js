@@ -1,6 +1,7 @@
 import { Post } from '../models/posts.js';
 import { Member } from '../models/members.js';
 import { uploadImage } from '../utils/imageKit.js';
+import { Friend } from '../models/members.js';
 
 import HttpError from '../models/http-error.js';
 import { matchedData, validationResult } from 'express-validator';
@@ -152,22 +153,19 @@ const getMyPosts = async (req, res, next) => {
 };
 
 const getFriendsPosts = async (req, res, next) => {
-  const memberId = req.verifiedMember._id;
-
   try {
+    const memberId = req.verifiedMember._id;
     const friendDocument = await Friend.findOne({ member: memberId });
 
-    if (
-      !friendDocument ||
-      !friendDocument.friends ||
-      friendDocument.friends.length === 0
-    ) {
+    if (!friendDocument || !friendDocument.friends || friendDocument.friends.length === 0) {
       return res.json([]);
     }
 
     const postsList = await Post.find({
       author: { $in: friendDocument.friends },
-    }).populate('author', 'username firstName lastName photo');
+    })
+      .populate('author', 'username firstName lastName photo')
+      .populate('comments.author', 'username firstName lastName photo');
 
     res.json(postsList);
   } catch (error) {

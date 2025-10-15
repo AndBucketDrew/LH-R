@@ -29,11 +29,7 @@ const addFriend = async (req, res, next) => {
     } else {
     }
 
-    if (
-      recipientFriend.pendingFriendRequests.some(
-        (id) => id.toString() === sender.toString()
-      )
-    ) {
+    if (recipientFriend.pendingFriendRequests.some((id) => id.toString() === sender.toString())) {
       throw new HttpError('Friend request already sent', 409);
     }
 
@@ -62,10 +58,7 @@ const deleteFriend = async (req, res, next) => {
     );
 
     if (!updatedUserDocument) {
-      throw new HttpError(
-        'Could not find friend list for the logged-in user.',
-        404
-      );
+      throw new HttpError('Could not find friend list for the logged-in user.', 404);
     }
 
     const updatedFriendDocument = await Friend.findOneAndUpdate(
@@ -75,9 +68,7 @@ const deleteFriend = async (req, res, next) => {
     );
 
     if (!updatedFriendDocument) {
-      console.warn(
-        `Friend list not found for user ${friendId}. Data may be inconsistent.`
-      );
+      console.warn(`Friend list not found for user ${friendId}. Data may be inconsistent.`);
     }
 
     res.json({
@@ -86,12 +77,7 @@ const deleteFriend = async (req, res, next) => {
     });
   } catch (error) {
     console.error('Error in removeFriend controller:', error.message);
-    return next(
-      new HttpError(
-        error.message || 'Failed to remove friend.',
-        error.code || 500
-      )
-    );
+    return next(new HttpError(error.message || 'Failed to remove friend.', error.code || 500));
   }
 };
 
@@ -110,11 +96,7 @@ const getPendingFriendRequests = async (req, res, next) => {
     if (!friendDoc) {
       return res.json([]);
     }
-    console.log(
-      'Pending requests for:',
-      req.verifiedMember._id,
-      friendDoc.pendingFriendRequests
-    );
+
     res.json(friendDoc.pendingFriendRequests);
   } catch (error) {
     return next(new HttpError(error, error.errorCode || 500));
@@ -149,11 +131,9 @@ const getRelationshipStatus = async (req, res, next) => {
     const targetUserFriendDoc = await Friend.findOne({ member: userId });
 
     // Check if the target user has sent a friend request to the current user
-    const isPendingReceived =
-      currentUserFriendDoc?.pendingFriendRequests.includes(userId);
+    const isPendingReceived = currentUserFriendDoc?.pendingFriendRequests.includes(userId);
     // Check if the current user has sent a friend request to the target user
-    const isPendingSent =
-      targetUserFriendDoc?.pendingFriendRequests.includes(currentUserId);
+    const isPendingSent = targetUserFriendDoc?.pendingFriendRequests.includes(currentUserId);
     // Check if they are friends
     const isFriend = currentUserFriendDoc?.friends.includes(userId);
 
@@ -202,9 +182,7 @@ const manageFriendRequest = async (req, res, next) => {
     }
 
     if (
-      !recipientFriend.pendingFriendRequests.some(
-        (id) => id.toString() === senderId.toString()
-      )
+      !recipientFriend.pendingFriendRequests.some((id) => id.toString() === senderId.toString())
     ) {
       throw new HttpError('Friend request not found!', 404);
     }
@@ -212,9 +190,7 @@ const manageFriendRequest = async (req, res, next) => {
     // Check if already friends to prevent multiple accepts
     if (
       action === 'accept' &&
-      recipientFriend.friends.some(
-        (id) => id.toString() === senderId.toString()
-      )
+      recipientFriend.friends.some((id) => id.toString() === senderId.toString())
     ) {
       throw new HttpError('Already friends!', 409);
     }
@@ -232,18 +208,12 @@ const manageFriendRequest = async (req, res, next) => {
       await recipientFriend.save({ session });
 
       // Update sender's Friend document with recipientId
-      let senderFriend = await Friend.findOne({ member: senderId }).session(
-        session
-      );
+      let senderFriend = await Friend.findOne({ member: senderId }).session(session);
       if (!senderFriend) {
         senderFriend = new Friend({ member: senderId });
         await senderFriend.save({ session });
       }
-      if (
-        !senderFriend.friends.some(
-          (id) => id.toString() === req.verifiedMember._id.toString()
-        )
-      ) {
+      if (!senderFriend.friends.some((id) => id.toString() === req.verifiedMember._id.toString())) {
         senderFriend.friends.push(req.verifiedMember._id);
         await senderFriend.save({ session });
       }
@@ -254,10 +224,7 @@ const manageFriendRequest = async (req, res, next) => {
     }
 
     res.json({
-      message:
-        action === 'decline'
-          ? 'Friend request declined'
-          : 'Friend request accepted!',
+      message: action === 'decline' ? 'Friend request declined' : 'Friend request accepted!',
     });
   } catch (error) {
     if (session) {

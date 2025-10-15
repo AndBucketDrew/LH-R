@@ -17,13 +17,21 @@ export default function AvatarIcon() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Avatar className="">
-          <AvatarImage
-            className="w-9 h-9 rounded-full object-cover"
-            src={loggedInMember?.photo?.url}
-            alt="@shadcn"
-          />
-          <AvatarFallback>{`${loggedInMember?.firstName[0]} ${loggedInMember?.lastName[0]}`}</AvatarFallback>
+        <Avatar className="relative w-13 h-13">
+          {' '}
+          {/* Changed from w-9 h-9 to w-13 h-13 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <AvatarImage
+              className="w-13 h-13 rounded-full object-cover border-background" // Changed from w-14 h-14 to w-13 h-13
+              src={loggedInMember?.photo?.url}
+              alt="@shadcn"
+            />
+            <AvatarFallback className="w-13 h-13 text-xl">
+              {' '}
+              {/* Changed from w-14 h-14 to w-13 h-13, and text-lg to text-xl for better fit */}
+              {`${loggedInMember?.firstName[0]} ${loggedInMember?.lastName[0]}`}
+            </AvatarFallback>
+          </div>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-50 mr-14">
@@ -43,7 +51,9 @@ export default function AvatarIcon() {
         )}
         {loggedInMember && (
           <>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <strong>My Account</strong>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <Link to="/profile">

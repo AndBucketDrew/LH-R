@@ -26,13 +26,7 @@ const ChatContainer = () => {
         })
         .catch((err) => console.error('ChatContainer: Fetch error:', err));
     }
-  }, [
-    _hasHydrated,
-    selectedUser?._id,
-    loggedInMember?._id,
-    getMessages,
-    subscribeToMessages,
-  ]);
+  }, [_hasHydrated, selectedUser?._id, loggedInMember?._id, getMessages, subscribeToMessages]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
@@ -42,6 +36,51 @@ const ChatContainer = () => {
       });
     }
   }, [messages]);
+
+  const decodeHtml = (text) => {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
+  };
+
+  const linkifyText = (text) => {
+    const decoded = decodeHtml(text);
+    const urlRegex = /\b((https?:\/\/|www\.)[^\s]+)/gi;
+
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = urlRegex.exec(decoded)) !== null) {
+      const { index } = match;
+      const url = match[0];
+
+      if (index > lastIndex) {
+        parts.push(decoded.slice(lastIndex, index));
+      }
+
+      const href = url.startsWith('http') ? url : `https://${url}`;
+      parts.push(
+        <a
+          key={index}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className=" underline break-words"
+        >
+          {url}
+        </a>
+      );
+
+      lastIndex = index + url.length;
+    }
+
+    if (lastIndex < decoded.length) {
+      parts.push(decoded.slice(lastIndex));
+    }
+
+    return parts;
+  };
 
   if (!selectedUser)
     return (
@@ -63,21 +102,16 @@ const ChatContainer = () => {
       <ChatHeader />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
-          <div className="text-center text-muted-foreground">
-            No messages yet
-          </div>
+          <div className="text-center text-muted-foreground">No messages yet</div>
         ) : (
           messages.map((message, index) => {
-            const isMine =
-              String(message.senderId) === String(loggedInMember?._id);
+            const isMine = String(message.senderId) === String(loggedInMember?._id);
             const ref = index === messages.length - 1 ? messageEndRef : null;
 
             return (
               <div
                 key={message._id}
-                className={`w-full flex ${
-                  isMine ? 'justify-end' : 'justify-start'
-                }`}
+                className={`w-full flex ${isMine ? 'justify-end' : 'justify-start'}`}
               >
                 {!isMine && (
                   <img
@@ -101,7 +135,11 @@ const ChatContainer = () => {
                       className="w-full max-h-48 object-cover rounded-lg mb-2"
                     />
                   )}
-                  {message.text && <p className="text-sm">{message.text}</p>}
+                  {message.text && (
+                    <p className="text-sm break-words whitespace-pre-wrap text-left">
+                      {linkifyText(message.text)}
+                    </p>
+                  )}
                   <span className="block text-xs text-muted-foreground mt-1 text-right">
                     {formatMessageTime(message.createdAt)}
                   </span>

@@ -16,6 +16,7 @@ import MessagePage from './Components/MessagePage/MessagePage';
 import MemberProfile from './Components/Profile/MemberProfile';
 import { ResetPassword } from './Components/ForgotPassword/ResetPassword';
 import { SetNewPassword } from './Components/ForgotPassword/SetNewPassword';
+import Footer from './Components/Footer/Footer';
 
 function App() {
   const { loggedInMember, memberCheck, showAddPost, setShowAddPost } = useStore((state) => state);
@@ -81,7 +82,8 @@ function App() {
   return (
     <div className="flex flex-col">
       <Header />
-      <main className="container mx-auto px-6 pt-20 flex-grow">{routes}</main>
+      <main className="container mx-auto px-6 pt-10 flex-1 overflow-y-auto">{routes}</main>
+      {/* <Footer /> */}
       <Toaster richColors position="bottom-left" />
     </div>
   );

@@ -201,12 +201,14 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
   memberLogout: () => {
     localStorage.removeItem('lh_token');
     localStorage.removeItem('lh_member');
+    localStorage.removeItem('chat-storage');
     get().disconnectSocket();
+    set({
+      ...initialState,
+      selectedUser: null, // Explicitly annul selectedUser to ensure it's cleared
+    });
     console.log(`member logout has been triggered`);
-
-    set({ ...initialState });
   },
-
   memberCheck: async () => {
     try {
       const token = localStorage.getItem('lh_token');
