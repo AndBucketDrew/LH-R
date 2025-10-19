@@ -35,7 +35,7 @@ export function ResetPassword() {
     <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">
       {!emailSent ? (
         <>
-          <div className="bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-between px-12">
+          <div className="background-box bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-between px-12 overflow-hidden">
             <div className="max-w-md">
               <h2 className="text-2xl font-semibold mb-3">Forgot your password?</h2>
               <p className="text-sm mb-8 leading-relaxed">
@@ -45,13 +45,14 @@ export function ResetPassword() {
             </div>
           </div>
 
-          <Card className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md">
+          <Card className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[450px] h-[380px] shadow-xl rounded-md transition-all duration-700 ease-in-out max-[1300px]:h-[300px] max-[1300px]:right-0 max-[1300px]:left-1/2 max-[1300px]:-translate-x-1/2">
+            <div className="space-y-6">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg tracking-wide">Enter your Email Address</CardTitle>
             </CardHeader>
 
-            <CardContent>
-              <div className="space-y-6">
+            <CardContent className="h-full flex flex-col justify-center space-y-4">
+              <div className="space-y-8">
                 <div className="flex flex-col space-y-2">
                   <Label htmlFor="email" className="text-sm text-gray-700">
                     Email
@@ -81,6 +82,8 @@ export function ResetPassword() {
                 </Button>
               </div>
             </CardContent>
+            </div>
+
           </Card>
         </>
       ) : (

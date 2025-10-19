@@ -2,8 +2,6 @@ import { Button } from '../ui/button';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
@@ -18,6 +16,7 @@ import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import clsx from 'clsx';
 
 const SignupSchema = z
   .object({
@@ -102,7 +101,7 @@ export function Signup() {
   return (
     <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">
       {/* Background horizontal box */}
-      <div className="bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-end px-12">
+      <div className="signup-background-box bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-end px-12 overflow-hidden">
         <div className="max-w-md">
           <h2 className="text-2xl font-semibold mb-3">
             Already have an account?
@@ -118,12 +117,10 @@ export function Signup() {
       </div>
 
       {/* Floating signup card */}
-      <Card className="absolute left-[10%] top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg tracking-wide h-1">
-            SIGN UP
-          </CardTitle>
-        </CardHeader>
+      <Card className={clsx(
+        'absolute top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md transition-all duration-700 ease-in-out',
+        'left-[10%] max-[1300px]:left-1/2 max-[1300px]:-translate-x-1/2 max-[1300px]:w-[550px]'
+      )}>
 
         <CardContent>
           <Form {...form}>
@@ -311,6 +308,16 @@ export function Signup() {
               >
                 Sign Up
               </Button>
+
+              {/* Login button shown only under 1300px */}
+              <Button
+                asChild
+                variant="outline"
+                className="px-6 w-full hidden max-[1300px]:flex animate-dropIn"
+              >
+                <Link to="/login">Login</Link>
+              </Button>
+
             </form>
           </Form>
         </CardContent>
