@@ -278,12 +278,15 @@ const getMemberByUsername = async (req, res, next) => {
 const filterMember = async (req, res, next) => {
   const { q } = req.query;
   const member = req.verifiedMember._id;
+  let { limit } = req.query;
   console.log('Verified member:', req.verifiedMember);
   // if(!q) {
   //   throw new HttpError('query is required', 418);
   // }
 
   try {
+    const maxLimit = Math.min(parseInt(limit) || 10, 50); // default 10, max 50
+
     //Maybe index this stuff next time
     const users = await Member.find({
       $and: [
@@ -298,11 +301,11 @@ const filterMember = async (req, res, next) => {
       ],
     })
       .select('username firstName lastName photo')
-      .limit(5)
+      .limit(maxLimit)
       .lean();
 
     res.json(users);
-  } catch (err) {
+  } catch (error) {
     return next(new HttpError(error, error.errorCode || 500));
   }
 };

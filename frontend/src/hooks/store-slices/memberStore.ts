@@ -18,7 +18,8 @@ const BASE_URL = 'http://localhost:8000';
 export interface MemberStore {
   member: IMember;
   user: IMember;
-  members: IMember[];
+  friendsSearchResults: IMember[],
+  wideSearchResults: IMember[],
   loading: boolean;
   isUpdatingProfile: boolean;
   loggedInMember: IMember | null;
@@ -28,7 +29,8 @@ export interface MemberStore {
   dialog: any | null;
   socket: any | null;
   resetMember: () => void;
-  searchMembers: (q: string) => Promise<IMember[]>;
+  searchMembersFriends: (q: string) => Promise<IMember[]>;
+  searchMembersWide: (q: string, limit?: number) => Promise<IMember[]>;
   getMemberById: (id: string) => Promise<IMember>;
   getMemberByUsername: (username: string) => Promise<IMember>;
   memberSignup: (data: SignupCredentials) => Promise<boolean>;
@@ -40,7 +42,7 @@ export interface MemberStore {
   memberRefreshMe: () => void;
   connectSocket: () => void;
   disconnectSocket: () => void;
-  editProfile: (data: EditCredentials) => Promise<boolean>;
+  editProfile: (data: EditCredentials | FormData) => Promise<boolean>;
   memberChangePassword: (data: PasswordData) => Promise<boolean>;
 }
 
@@ -69,29 +71,49 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
   get
 ): MemberStore => ({
   member: defaultMember,
-  members: [],
+  friendsSearchResults: [],
+  wideSearchResults: [],
   user: defaultMember,
   ...initialState,
 
   resetMember: () => set({ member: defaultMember }),
 
-  searchMembers: async (q: string) => {
+  searchMembersFriends: async (q: string) => {
     try {
       const token = localStorage.getItem('lh_token');
       const response = await fetchAPI({
         method: 'get',
-        url: `/members/search?q=${q}`,
+        url: `/friends/search?q=${encodeURIComponent(q)}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       // Update state with fetched members and reset loading
-      set({ members: response.data, loading: false });
+      set({ friendsSearchResults: response.data, loading: false });
       return response.data;
     } catch (err) {
       console.error('Error fetching members', err);
       set({ loading: false });
+    }
+  },
+
+  searchMembersWide: async (q: string, limit?: number) => {
+    try {
+      const token = localStorage.getItem('lh_token');
+      const url = `/members/search?q=${encodeURIComponent(q)}${limit ? `&limit=${limit}` : ''}`;
+
+      const response = await fetchAPI({
+        method: 'get',
+        url,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      set({ wideSearchResults: response.data });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching members wide search', error);
+      return [];
     }
   },
 
@@ -278,7 +300,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
     localStorage.setItem('lh_member', JSON.stringify(loggedInMember));
   },
 
-  editProfile: async (data: EditCredentials) => {
+  editProfile: async (data: EditCredentials | FormData) => {
     try {
       set({ isUpdatingProfile: true });
       const token = localStorage.getItem('lh_token');
