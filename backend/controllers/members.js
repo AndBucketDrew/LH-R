@@ -7,7 +7,8 @@ import { uploadImage, deleteFileInImageKit } from '../utils/imageKit.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Member, Password, Resettoken, Friend } from '../models/members.js';
+import { Member, Password, Resettoken } from '../models/members.js';
+import { Friend } from '../models/friends.js';
 
 import HttpError from '../models/http-error.js';
 
@@ -308,7 +309,6 @@ const filterMember = async (req, res, next) => {
       .select('username firstName lastName photo')
       .limit(maxLimit)
       .lean();
-
 
     res.json(users);
   } catch (error) {

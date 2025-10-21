@@ -5,6 +5,7 @@ export interface IMember {
   firstName: string;
   lastName: string;
   photo?: Photo;
+
   adress?: {
     city: string;
   };
@@ -18,6 +19,10 @@ export interface PasswordData {
   oldPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+export interface ForgotPasswordData {
+  password: string;
+  t: string;
 }
 
 export interface LoginCredentials {

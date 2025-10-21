@@ -3,6 +3,7 @@ import type {
   LoginCredentials,
   SignupCredentials,
   EditCredentials,
+  ForgotPasswordData,
   PasswordData,
 } from '../../models/member.model.ts';
 import type { Alert, DecodedToken, ApiResponse } from '@/models/helper.model.ts';
@@ -18,8 +19,8 @@ const BASE_URL = 'http://localhost:8000';
 export interface MemberStore {
   member: IMember;
   user: IMember;
-  friendsSearchResults: IMember[],
-  wideSearchResults: IMember[],
+  friendsSearchResults: IMember[];
+  wideSearchResults: IMember[];
   loading: boolean;
   isUpdatingProfile: boolean;
   loggedInMember: IMember | null;
@@ -36,8 +37,8 @@ export interface MemberStore {
   memberSignup: (data: SignupCredentials) => Promise<boolean>;
   memberLogout: () => void;
   memberLogin: (data: LoginCredentials) => Promise<boolean>;
-  memberResetPassword: (data: { email: string }) => Promise<boolean>;
-  memberSetNewPassword: (data: string) => Promise<boolean>;
+  memberResetPassword: (data: string) => Promise<boolean>;
+  memberSetNewPassword: (data: ForgotPasswordData) => Promise<boolean>;
   memberCheck: () => void;
   memberRefreshMe: () => void;
   connectSocket: () => void;
@@ -78,44 +79,46 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
 
   resetMember: () => set({ member: defaultMember }),
 
-searchMembersFriends: async (q: string) => {
-  try {
-    const token = localStorage.getItem('lh_token');
-    const url = `/members/search?q=${encodeURIComponent(q)}&type=friends`;
+  searchMembersFriends: async (q: string) => {
+    try {
+      const token = localStorage.getItem('lh_token');
+      const url = `/members/search?q=${encodeURIComponent(q)}&type=friends`;
 
-    const response = await fetchAPI({
-      method: 'get',
-      url,
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const response = await fetchAPI({
+        method: 'get',
+        url,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    set({ friendsSearchResults: response.data, loading: false });
-    return response.data;
-  } catch (err) {
-    console.error('Error fetching friends search', err);
-    set({ loading: false });
-    return [];
-  }
-},
+      set({ friendsSearchResults: response.data, loading: false });
+      return response.data;
+    } catch (err) {
+      console.error('Error fetching friends search', err);
+      set({ loading: false });
+      return [];
+    }
+  },
 
-searchMembersWide: async (q: string, limit?: number) => {
-  try {
-    const token = localStorage.getItem('lh_token');
-    const url = `/members/search?q=${encodeURIComponent(q)}&type=all${limit ? `&limit=${limit}` : ''}`;
+  searchMembersWide: async (q: string, limit?: number) => {
+    try {
+      const token = localStorage.getItem('lh_token');
+      const url = `/members/search?q=${encodeURIComponent(q)}&type=all${
+        limit ? `&limit=${limit}` : ''
+      }`;
 
-    const response = await fetchAPI({
-      method: 'get',
-      url,
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const response = await fetchAPI({
+        method: 'get',
+        url,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    set({ wideSearchResults: response.data });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching members wide search', error);
-    return [];
-  }
-},
+      set({ wideSearchResults: response.data });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching members wide search', error);
+      return [];
+    }
+  },
 
   getMemberById: async (id: string) => {
     try {
@@ -309,7 +312,7 @@ searchMembersWide: async (q: string, limit?: number) => {
       const memberId = get().loggedInMember?._id;
       if (!memberId) throw new Error('No logged in member found');
 
-      const response = await fetchAPI({
+      await fetchAPI({
         method: 'patch',
         url: `members/${memberId}`,
         data, // FormData object
@@ -360,7 +363,7 @@ searchMembersWide: async (q: string, limit?: number) => {
     }
   },
 
-  memberResetPassword: async (data: any) => {
+  memberResetPassword: async (data: string) => {
     try {
       await fetchAPI({
         method: 'post',
@@ -376,7 +379,8 @@ searchMembersWide: async (q: string, limit?: number) => {
       return false;
     }
   },
-  memberSetNewPassword: async (data: any) => {
+  
+  memberSetNewPassword: async (data: ForgotPasswordData) => {
     const { t: token, password } = data;
 
     try {

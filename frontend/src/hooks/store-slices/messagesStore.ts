@@ -30,12 +30,10 @@ const initialState = {
   isMessagesLoading: false,
 };
 
-export const createMessageSlice: StateCreator<
-  StoreState,
-  [],
-  [],
-  MessagesStore
-> = (set, get): MessagesStore => ({
+export const createMessageSlice: StateCreator<StoreState, [], [], MessagesStore> = (
+  set,
+  get
+): MessagesStore => ({
   ...initialState,
 
   getUsers: async () => {
@@ -137,14 +135,11 @@ export const createMessageSlice: StateCreator<
       if (
         (newMessage.senderId === selectedUser._id &&
           newMessage.recipientId === loggedInMember._id) ||
-        (newMessage.senderId === loggedInMember._id &&
-          newMessage.recipientId === selectedUser._id)
+        (newMessage.senderId === loggedInMember._id && newMessage.recipientId === selectedUser._id)
       ) {
         set({ messages: [...get().messages, newMessage] });
       } else {
-        console.log(
-          `Message ignored: Not part of conversation with ${selectedUser._id}`
-        );
+        console.log(`Message ignored: Not part of conversation with ${selectedUser._id}`);
       }
     });
   },
