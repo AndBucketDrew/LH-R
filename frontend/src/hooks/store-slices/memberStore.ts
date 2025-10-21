@@ -78,44 +78,44 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
 
   resetMember: () => set({ member: defaultMember }),
 
-  searchMembersFriends: async (q: string) => {
-    try {
-      const token = localStorage.getItem('lh_token');
-      const response = await fetchAPI({
-        method: 'get',
-        url: `/friends/search?q=${encodeURIComponent(q)}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+searchMembersFriends: async (q: string) => {
+  try {
+    const token = localStorage.getItem('lh_token');
+    const url = `/members/search?q=${encodeURIComponent(q)}&type=friends`;
 
-      // Update state with fetched members and reset loading
-      set({ friendsSearchResults: response.data, loading: false });
-      return response.data;
-    } catch (err) {
-      console.error('Error fetching members', err);
-      set({ loading: false });
-    }
-  },
+    const response = await fetchAPI({
+      method: 'get',
+      url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  searchMembersWide: async (q: string, limit?: number) => {
-    try {
-      const token = localStorage.getItem('lh_token');
-      const url = `/members/search?q=${encodeURIComponent(q)}${limit ? `&limit=${limit}` : ''}`;
+    set({ friendsSearchResults: response.data, loading: false });
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching friends search', err);
+    set({ loading: false });
+    return [];
+  }
+},
 
-      const response = await fetchAPI({
-        method: 'get',
-        url,
-        headers: { Authorization: `Bearer ${token}` },
-      });
+searchMembersWide: async (q: string, limit?: number) => {
+  try {
+    const token = localStorage.getItem('lh_token');
+    const url = `/members/search?q=${encodeURIComponent(q)}&type=all${limit ? `&limit=${limit}` : ''}`;
 
-      set({ wideSearchResults: response.data });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching members wide search', error);
-      return [];
-    }
-  },
+    const response = await fetchAPI({
+      method: 'get',
+      url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    set({ wideSearchResults: response.data });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching members wide search', error);
+    return [];
+  }
+},
 
   getMemberById: async (id: string) => {
     try {

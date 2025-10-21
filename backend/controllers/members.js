@@ -7,7 +7,7 @@ import { uploadImage, deleteFileInImageKit } from '../utils/imageKit.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Member, Password, Resettoken } from '../models/members.js';
+import { Member, Password, Resettoken, Friend } from '../models/members.js';
 
 import HttpError from '../models/http-error.js';
 
@@ -276,33 +276,39 @@ const getMemberByUsername = async (req, res, next) => {
   }
 };
 const filterMember = async (req, res, next) => {
-  const { q } = req.query;
-  const member = req.verifiedMember._id;
-  let { limit } = req.query;
-  console.log('Verified member:', req.verifiedMember);
-  // if(!q) {
-  //   throw new HttpError('query is required', 418);
-  // }
+  const { q, type = 'all', limit } = req.query;
+  const memberId = req.verifiedMember._id;
 
   try {
-    const maxLimit = Math.min(parseInt(limit) || 10, 50); // default 10, max 50
+    if (!q) return res.json([]);
 
-    //Maybe index this stuff next time
-    const users = await Member.find({
-      $and: [
-        {
-          $or: [
-            { username: { $regex: q, $options: 'i' } },
-            { firstName: { $regex: q, $options: 'i' } },
-            { lastName: { $regex: q, $options: 'i' } },
-          ],
-        },
-        { _id: { $ne: member } }, // exclude logged-in user
+    // parse limit safely, default to 10, max 50
+    const maxLimit = Math.min(parseInt(limit) || 10, 50);
+
+    let matchQuery = {
+      $or: [
+        { username: { $regex: q, $options: 'i' } },
+        { firstName: { $regex: q, $options: 'i' } },
+        { lastName: { $regex: q, $options: 'i' } },
       ],
-    })
+      _id: { $ne: memberId }, // exclude self
+    };
+
+    if (type === 'friends') {
+      const friendDoc = await Friend.findOne({ member: memberId }).lean();
+
+      if (!friendDoc || !friendDoc.friends?.length) {
+        return res.json([]);
+      }
+
+      matchQuery._id = { $in: friendDoc.friends };
+    }
+
+    const users = await Member.find(matchQuery)
       .select('username firstName lastName photo')
       .limit(maxLimit)
       .lean();
+
 
     res.json(users);
   } catch (error) {

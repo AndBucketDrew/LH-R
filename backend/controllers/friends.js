@@ -42,37 +42,6 @@ const addFriend = async (req, res, next) => {
   }
 };
 
-const filterMemberFriends = async (req, res, next) => {
-  const { q } = req.query;
-  const memberId = req.verifiedMember._id;
-  console.log('Verified member:', req.verifiedMember);
-
-  try {
-    const friendDoc = await Friend.findOne({ member: memberId }).lean();
-    if (!friendDoc || !friendDoc.friends?.length) {
-      return res.json([]); // no friends, return empty
-    }
-
-    const friendIds = friendDoc.friends;
-
-    //Maybe index this stuff next time
-    const users = await Member.find({
-      _id: { $in: friendIds }, // only friends
-      $or: [
-        { username: { $regex: q, $options: 'i' } },
-        { firstName: { $regex: q, $options: 'i' } },
-        { lastName: { $regex: q, $options: 'i' } },
-      ],
-    })
-      .select('username firstName lastName photo')
-      .lean();
-
-    res.json(users);
-  } catch (err) {
-    return next(new HttpError(error, error.errorCode || 500));
-  }
-};
-
 const deleteFriend = async (req, res, next) => {
   try {
     const loggedInUser = req.verifiedMember._id;
@@ -277,5 +246,4 @@ export {
   getAllFriends,
   deleteFriend,
   getRelationshipStatus,
-  filterMemberFriends,
 };

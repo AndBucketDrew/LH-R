@@ -18,7 +18,6 @@ import {
 import {
   addFriend,
   deleteFriend,
-  filterMemberFriends,
   getAllFriends,
   getPendingFriendRequests,
   getRelationshipStatus,
@@ -41,10 +40,7 @@ import { getMessages, getUsersForSidebar, sendMessage } from '../controllers/mes
 const router = new Router();
 
 router.get('/members', getAllMembers);
-//Currently this is okey but if more search filters are added then makes sense to merge it into 1 endpoint
-router.get('/friends/search', checkToken, filterMemberFriends);
 router.get('/members/search', checkToken, filterMember);
-
 router.get('/members/:id', getOneMember);
 router.get('/members/username/:username', getMemberByUsername);
 
