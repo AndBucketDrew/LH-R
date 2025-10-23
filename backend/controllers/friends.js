@@ -4,6 +4,7 @@ import HttpError from '../models/http-error.js';
 import { Member } from '../models/members.js';
 import { Friend } from '../models/friends.js';
 import { Notification } from '../models/notifications.js';
+import { createNotification } from './notifications.js';
 
 
 const addFriend = async (req, res, next) => {
@@ -40,12 +41,12 @@ const addFriend = async (req, res, next) => {
     recipientFriend.pendingFriendRequests.push(sender);
     await recipientFriend.save();
 
-    await Notification.create({
-      targetUser: recipient,
-      type: 'friend_request',
+    await createNotification({
       fromUser: sender,
-      message: `${senderMember.username} sent you a friend request`
-    })
+      targetUser: recipient,
+      message: `${senderMember.username} sent you a friend request`,
+      type: 'friend_request',
+    });
 
     res.json(recipientFriend);
   } catch (error) {
@@ -315,6 +316,14 @@ const manageFriendRequest = async (req, res, next) => {
       }
 
       await session.commitTransaction();
+
+      await createNotification({
+        fromUser: req.verifiedMember._id,
+        targetUser: senderId,
+        message: `${recipientMember.username} accepted your friend request`,
+        type: 'friend_accept',
+      });
+      
     } else {
       throw new HttpError('You must accept or decline', 422);
     }

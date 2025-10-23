@@ -43,7 +43,7 @@ import {
   getNotifications,
   getUnreadCount,
   getUnreadNotifications,
-  markAsRead,
+  markRead,
 } from '../controllers/notifications.js';
 
 const router = new Router();
@@ -56,7 +56,7 @@ router.get('/members/username/:username', getMemberByUsername);
 router.get('/notifications', checkToken, getNotifications);
 router.get('/notifications/unread', checkToken, getUnreadNotifications);
 router.get('/notifications/unread/count', checkToken, getUnreadCount);
-router.patch('/notifications/:id/read', checkToken, markAsRead);
+router.patch('/notifications/read/:id', checkToken, markRead);
 
 router.post(
   '/members/signup',

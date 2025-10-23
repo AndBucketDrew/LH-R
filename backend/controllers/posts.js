@@ -5,6 +5,7 @@ import { Friend } from '../models/friends.js';
 import HttpError from '../models/http-error.js';
 import { matchedData, validationResult } from 'express-validator';
 import { Notification } from '../models/notifications.js';
+import { createNotification } from './notifications.js';
 
 const createPost = async (req, res, next) => {
   try {
@@ -63,6 +64,16 @@ const toggleLike = async (req, res, next) => {
       post.likes.push(userId);
     }
 
+    if (post.author._id.toString() !== userId.toString()) {
+      await createNotification({
+        fromUser: userId,
+        targetUser: post.author._id,
+        relatedPost: postId,
+        message: `${user.username} liked your post`,
+        type: 'like',
+      });
+    }
+
     await post.save();
 
     res.status(200).json({
@@ -104,15 +115,14 @@ const addComment = async (req, res, next) => {
     post.comments.push(comment);
     await post.save();
 
-    if (post.author._id.toString() !== commentAuthorId) {
-      const notify = await Notification.create({
-        targetUser: post.author._id,
-        type: 'comment',
+    if (post.author._id.toString() !== commentAuthorId.toString()) {
+      await createNotification({
         fromUser: commentAuthorId,
+        targetUser: post.author._id,
         relatedPost: postId,
         message: `${commentAuthor.username} commented on your post.`,
+        type: 'comment'
       });
-      console.log(notify, 'Notification Created')
     }
 
     res.status(201).json({ comment, commentCount: post.comments.length });
