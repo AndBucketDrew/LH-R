@@ -37,7 +37,7 @@ import {
   getFriendsPosts,
 } from '../controllers/posts.js';
 
-import { getMessages, getUsersForSidebar, sendMessage } from '../controllers/messages.js';
+import { getMessages, sendMessage } from '../controllers/messages.js';
 
 import {
   getNotifications,
@@ -105,11 +105,7 @@ router.post(
   setNewPassword
 );
 
-router.post(
-  '/friends/add-friend/:id',
-  checkToken,
-  addFriend
-);
+router.post('/friends/add-friend/:id', checkToken, addFriend);
 
 router.get(
   '/friends/pending',
@@ -153,7 +149,6 @@ router.put('/posts/:id/likes', checkToken, toggleLike);
 router.get('/posts/:id', getPostById);
 router.get('/posts', getAllPosts);
 
-router.get('/messages/users', checkToken, getUsersForSidebar);
 router.get('/messages/:userId', checkToken, getMessages);
 router.post(
   '/messages/send/:id',

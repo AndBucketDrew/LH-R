@@ -5,20 +5,6 @@ import { Message } from '../models/messages.js';
 import { uploadImage } from '../utils/imageKit.js';
 import { io } from '../common/socket.js';
 
-export const getUsersForSidebar = async (req, res) => {
-  try {
-    const loggedInMember = req.verifiedMember._id;
-    const filteredUsers = await Member.find({
-      _id: { $ne: loggedInMember },
-    });
-
-    res.status(200).json(filteredUsers);
-  } catch (error) {
-    console.error('Error in getUsersForSidebar: ', error.message);
-    throw new HttpError(error.message, 500);
-  }
-};
-
 export const getMessages = async (req, res) => {
   try {
     const { userId } = req.params;

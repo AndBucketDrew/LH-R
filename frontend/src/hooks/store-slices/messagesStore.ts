@@ -12,7 +12,7 @@ export interface MessagesStore {
   selectedUser: IMember | null;
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
-  getUsers: () => Promise<void>;
+
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelectedUser: (userId: IMember | null) => void;
@@ -34,27 +34,6 @@ export const createMessageSlice: StateCreator<StoreState, [], [], MessagesStore>
 ): MessagesStore => ({
   ...initialState,
 
-  getUsers: async () => {
-    set({ isUsersLoading: true });
-    try {
-      const token = localStorage.getItem('lh_token');
-      if (!token) throw new Error('No token found');
-
-      const response = await fetchAPI({
-        url: 'messages/users',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      set({ users: response.data });
-    } catch (error: any) {
-      console.error('getUsers error:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch users');
-    } finally {
-      set({ isUsersLoading: false });
-    }
-  },
-
   setSelectedUser: (user) => {
     set({ selectedUser: user, messages: [] });
     if (user?._id) {
@@ -64,6 +43,7 @@ export const createMessageSlice: StateCreator<StoreState, [], [], MessagesStore>
       get().unsubscribeFromMessages();
     }
   },
+
   getMessages: async (userId) => {
     if (!userId) {
       return;
