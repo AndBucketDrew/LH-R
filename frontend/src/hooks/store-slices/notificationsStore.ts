@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import type { StateCreator } from 'zustand';
 import type { StoreState } from '../useStore.ts';
 import type { INotification } from '@/models/notification.model.ts';
-import useStore from '../useStore.ts';
 
 export interface NotificationsStore {
   notifications: INotification[];
@@ -59,7 +58,7 @@ export const createNotificationSlice: StateCreator<StoreState, [], [], Notificat
 
       await fetchAPI({
         method: 'patch',
-        url: `/notifications/${id}/read`,
+        url: `/notifications/read/${id}`,
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -82,7 +81,7 @@ export const createNotificationSlice: StateCreator<StoreState, [], [], Notificat
 
       await fetchAPI({
         method: 'patch',
-        url: 'notifications/read/all',
+        url: '/notifications/read/all',
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -97,13 +96,11 @@ export const createNotificationSlice: StateCreator<StoreState, [], [], Notificat
   },
 
   subscribeToNotifications: () => {
-    const { loggedInMember } = get();
-    if (!loggedInMember) return;
-
-    const socket = useStore.getState().socket;
+    const { socket } = get();
     if (!socket) return;
 
     socket.off('notification');
+
     socket.on('notification', (newNotification: INotification) => {
       set((state) => ({
         notifications: [newNotification, ...state.notifications],
@@ -113,9 +110,10 @@ export const createNotificationSlice: StateCreator<StoreState, [], [], Notificat
   },
 
   unsubscribeFromNotifications: () => {
-    const socket = useStore.getState().socket;
-    if (socket) {
-      socket.off('notification');
+    const { socket } = get();
+    if (!socket) {
+      return;
     }
+    socket.off('notification');
   },
 });

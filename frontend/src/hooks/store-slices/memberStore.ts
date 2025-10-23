@@ -104,7 +104,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       const token = localStorage.getItem('lh_token');
       const url = `/members/search?q=${encodeURIComponent(q)}&type=all${
         limit ? `&limit=${limit}` : ''
-      }`;
+        }`;
 
       const response = await fetchAPI({
         method: 'get',
@@ -379,7 +379,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       return false;
     }
   },
-  
+
   memberSetNewPassword: async (data: ForgotPasswordData) => {
     const { t: token, password } = data;
 
@@ -401,15 +401,17 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
     }
   },
   connectSocket: () => {
-    const { loggedInMember } = get();
+    const { loggedInMember, socket } = get();
     if (!loggedInMember) {
       return;
     }
-    if (get().socket?.connected) {
+
+    if (socket?.connected) {
+      get().subscribeToNotifications();
       return;
     }
 
-    const socket = io(BASE_URL, {
+    const newSocket = io(BASE_URL, {
       transports: ['websocket'],
       query: { userId: loggedInMember._id },
       reconnection: true,
@@ -417,23 +419,25 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       reconnectionDelay: 1000,
     });
 
-    socket.on('connect', () => {
-      set({ socket });
+    newSocket.on('connect', () => {
+      set({ socket: newSocket });
+      get().subscribeToNotifications();
+
       if (get().selectedUser?._id) {
         get().subscribeToMessages();
       }
     });
 
-    socket.on('connect_error', (error: any) => {
+    newSocket.on('connect_error', (error: any) => {
       console.error(`Socket connection error for user ${loggedInMember._id}: ${error.message}`);
       toast.error(`Socket connection failed: ${error.message}`);
     });
 
-    socket.on('disconnect', (reason: String) => {
+    newSocket.on('disconnect', (reason: String) => {
       console.log('Disconected:', reason);
     });
 
-    set({ socket });
+    set({ socket: newSocket });
   },
 
   disconnectSocket: () => {

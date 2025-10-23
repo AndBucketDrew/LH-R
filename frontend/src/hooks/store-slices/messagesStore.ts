@@ -4,7 +4,7 @@ import fetchAPI from '../../utils/index.ts';
 import { toast } from 'sonner';
 import type { StateCreator } from 'zustand';
 import type { StoreState } from '../useStore.ts';
-import useStore from '../useStore.ts';
+
 
 export interface MessagesStore {
   messages: IMessage[];
@@ -118,21 +118,16 @@ export const createMessageSlice: StateCreator<StoreState, [], [], MessagesStore>
   },
 
   subscribeToMessages: () => {
-    const { selectedUser, loggedInMember } = get();
-    if (!selectedUser || !loggedInMember) {
-      return;
-    }
-
-    const socket = useStore.getState().socket;
-    if (!socket) {
+    const { selectedUser, loggedInMember, socket } = get();
+    if (!selectedUser || !loggedInMember || !socket) {
       return;
     }
 
     socket.off('newMessage');
+
     socket.on('newMessage', (newMessage: IMessage) => {
       if (
-        (newMessage.senderId === selectedUser._id &&
-          newMessage.recipientId === loggedInMember._id) ||
+        (newMessage.senderId === selectedUser._id && newMessage.recipientId === loggedInMember._id) ||
         (newMessage.senderId === loggedInMember._id && newMessage.recipientId === selectedUser._id)
       ) {
         set({ messages: [...get().messages, newMessage] });
@@ -143,7 +138,7 @@ export const createMessageSlice: StateCreator<StoreState, [], [], MessagesStore>
   },
 
   unsubscribeFromMessages: () => {
-    const socket = useStore.getState().socket;
+    const { socket } = get();
     if (socket) {
       socket.off('newMessage');
     }

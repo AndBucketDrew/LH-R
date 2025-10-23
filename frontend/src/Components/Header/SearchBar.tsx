@@ -105,6 +105,8 @@ export default function SearchBar({ buttonMode = false, collapseThreshold = 1100
                     </Link>
                   </li>
                 ))}
+              </ul>
+            )}
                 <li
                   className="flex items-center gap-2 justify-center p-2 hover:bg-gray-100 cursor-pointer border-t"
                   onClick={handleSeeAll}
@@ -114,8 +116,6 @@ export default function SearchBar({ buttonMode = false, collapseThreshold = 1100
                     See more results for "{query}"
                   </span>
                 </li>
-              </ul>
-            )}
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@ import AvatarIcon from './AvatarIcon';
 import useStore from '@/hooks/useStore';
 import { NavLink, useLocation } from 'react-router-dom';
 import { HouseIcon, CameraPlusIcon, ChatsCircleIcon } from '@phosphor-icons/react';
+import Notifications from './Notifications';
 
 export default function Navbar() {
   const { setShowAddPost, loggedInMember } = useStore((state) => state);
@@ -46,6 +47,7 @@ export default function Navbar() {
 
       {/* Right Section */}
       <div className="flex items-center gap-5">
+        <Notifications/>
         <ModeToggle />
         <AvatarIcon />
         <Separator orientation="vertical" className="h-5 w-[2px] bg-gray-500" />

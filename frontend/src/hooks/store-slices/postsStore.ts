@@ -111,7 +111,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
         },
       });
       set({ friendsPosts: response.data, loading: false });
-    } catch (error) {
+    } catch (error: any|unknown) {
       set({ error: error.message, loading: false });
       toast.error(error.response?.data?.message || 'Failed to fetch posts');
     }
@@ -151,7 +151,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
 
       // Optimistic toggle
       set((state) => {
-        const toggleLikes = (post) =>
+        const toggleLikes = (post: IPost) =>
           post._id === postId
             ? {
                 ...post,
@@ -193,7 +193,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
       toast.error(error.response?.data?.message || 'Failed to toggle like');
       // Revert optimistic update on error
       set((state) => {
-        const revertLikes = (post) =>
+        const revertLikes = (post: IPost) =>
           post._id === postId
             ? {
                 ...post,
@@ -222,7 +222,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
       });
 
       set((state) => ({
-        allPosts: state.allPosts.map((post) =>
+        friendsPosts: state.friendsPosts.map((post) =>
           post._id === postId
             ? { ...post, comments: [...post.comments, response.data.comment] }
             : post
