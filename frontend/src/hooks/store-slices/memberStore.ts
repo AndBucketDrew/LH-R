@@ -104,7 +104,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       const token = localStorage.getItem('lh_token');
       const url = `/members/search?q=${encodeURIComponent(q)}&type=all${
         limit ? `&limit=${limit}` : ''
-        }`;
+      }`;
 
       const response = await fetchAPI({
         method: 'get',
@@ -430,7 +430,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
 
     newSocket.on('connect_error', (error: any) => {
       console.error(`Socket connection error for user ${loggedInMember._id}: ${error.message}`);
-      toast.error(`Socket connection failed: ${error.message}`);
     });
 
     newSocket.on('disconnect', (reason: String) => {

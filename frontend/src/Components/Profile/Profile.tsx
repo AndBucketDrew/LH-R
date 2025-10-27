@@ -3,7 +3,7 @@ import ProfileHeader from './ProfileHeader';
 import { useEffect } from 'react';
 
 import useStore from '@/hooks/useStore.ts';
-
+// this is the Profile for a user that is not ME
 function Profile() {
   const { myPosts, fetchMyPosts } = useStore((state) => state);
 

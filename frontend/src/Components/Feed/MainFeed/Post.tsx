@@ -1,12 +1,21 @@
 import useStore from '@/hooks/useStore';
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Heart, MessageSquare } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Heart, MessageSquare, SendIcon } from 'lucide-react';
 
 const Post = () => {
   const { id } = useParams();
-  const { currentPost, loading, error, fetchPostById, toggleLike, addComment, loggedInMember } =
-    useStore((state) => state);
+  const {
+    currentPost,
+    loading,
+    error,
+    fetchPostById,
+    toggleLike,
+    addComment,
+    loggedInMember,
+    setShowSharePost,
+    setSharePostId,
+  } = useStore((state) => state);
   const [commentText, setCommentText] = useState('');
   const [commentsToShow, setCommentsToShow] = useState(10);
 
@@ -70,6 +79,15 @@ const Post = () => {
             <MessageSquare className="w-6 h-6" />
             <span className="ml-1 text-sm">{currentPost.comments?.length || 0}</span>
           </div>
+          <button
+            className="flex items-center text-foreground hover:text-primary transition-colors"
+            onClick={() => {
+              setSharePostId(id!);
+              setShowSharePost(true);
+            }}
+          >
+            <SendIcon className="w-6 h-6" />
+          </button>
         </div>
       </div>
 

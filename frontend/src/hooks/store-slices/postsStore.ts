@@ -14,9 +14,11 @@ export interface PostsStore {
   memberPosts: IPost[];
   showAddPost: boolean;
   showSharePost: boolean;
+  sharePostId: string | null;
 
   setShowAddPost: (value: boolean) => void;
   setShowSharePost: (value: boolean) => void;
+  setSharePostId: (postId: string | null) => void;
   fetchPostById: (id: string) => Promise<void>;
   fetchMyPosts: () => Promise<void>;
   fetchMemberPosts: (username: string) => Promise<void>;
@@ -25,6 +27,7 @@ export interface PostsStore {
   uploadPost: (data: IPost) => Promise<boolean>;
   toggleLike: (postId: string) => Promise<void>;
   addComment: (postId: string, data: { text: string }) => Promise<void>;
+  sharePost: (memberIds: string[], postId: string) => Promise<void>;
 }
 
 const initialState = {
@@ -40,9 +43,11 @@ const initialState = {
 const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get): PostsStore => ({
   showAddPost: false,
   showSharePost: false,
+  sharePostId: null,
   setShowAddPost: (value) => set({ showAddPost: value }),
-
   setShowSharePost: (value) => set({ showSharePost: value }),
+  setSharePostId: (postId) => set({ sharePostId: postId }),
+
   ...initialState,
 
   fetchPostById: async (id: string) => {
@@ -245,6 +250,30 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
     } catch (error: any) {
       console.error('Comment error:', error);
       toast.error(error.response?.data?.message || 'Failed to add comment');
+    }
+  },
+  sharePost: async (memberIds: string[], postId: string | null) => {
+    const { messages } = get();
+    try {
+      const token = localStorage.getItem('lh_token');
+      const FRONTEND_URL = `http://localhost:5173`;
+
+      const link = `${FRONTEND_URL}/posts/${postId}`;
+
+      const payload = { recipients: memberIds, text: link };
+
+      const response = await fetchAPI({
+        method: 'post',
+        url: `/posts/share`,
+        data: payload,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      set({ messages: [...messages, response.data] });
+    } catch (error) {
+      console.error(error);
     }
   },
 });

@@ -35,6 +35,7 @@ import {
   getMyPosts,
   getMemberPosts,
   getFriendsPosts,
+  sharePost,
 } from '../controllers/posts.js';
 
 import { getMessages, sendMessage } from '../controllers/messages.js';
@@ -144,6 +145,7 @@ router.post(
   addComment
 );
 router.get('/posts/myPosts', checkToken, getMyPosts);
+router.post('/posts/share', checkToken, sharePost);
 router.get('/posts/memberPosts/:username', getMemberPosts);
 router.put('/posts/:id/likes', checkToken, toggleLike);
 router.get('/posts/:id', getPostById);

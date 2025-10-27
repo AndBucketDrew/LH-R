@@ -4,6 +4,7 @@ import {
   DialogTitle,
   DialogHeader,
   DialogFooter,
+  DialogDescription,
 } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -18,16 +19,8 @@ type PostData = {
   photo: unknown;
 };
 
-export default function AddPost({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) {
-  const { uploadPost, setShowAddPost, memberRefreshMe } = useStore(
-    (state) => state
-  );
+export default function AddPost({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { uploadPost, setShowAddPost, memberRefreshMe } = useStore((state) => state);
   const { formState, handleFormChange } = useForm<PostData>({
     caption: '',
     photo: null,
@@ -60,12 +53,10 @@ export default function AddPost({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create Post</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="flex justify-center items-center">
-          <ImageUploader
-            handleFormChange={handleFormChange}
-            photo={formState.photo}
-          />
+          <ImageUploader handleFormChange={handleFormChange} photo={formState.photo} />
         </div>
         <Input
           id="caption"

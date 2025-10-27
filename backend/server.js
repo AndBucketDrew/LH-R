@@ -17,7 +17,6 @@ const PORT = process.env.PORT || 8000;
 const CONNECTION_STRING = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@lh-remake.johjfoh.mongodb.net/`;
 
 // console.log(CONNECTION_STRING);
-
 // Middlewares
 app.use(cors());
 

@@ -63,7 +63,12 @@ function App() {
         {/* <Route path="/post" element={<Post />} /> */}
       </Routes>
       <AddPost isOpen={showAddPost} onClose={() => setShowAddPost(false)} />
-      <SharePost isOpen={showSharePost} onClose={() => setShowSharePost(false)} />
+      <SharePost
+        isOpen={showSharePost}
+        onClose={() => {
+          setShowSharePost(false);
+        }}
+      />
     </>
   );
 

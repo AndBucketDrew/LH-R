@@ -4,7 +4,9 @@ import { uploadImage } from '../utils/imageKit.js';
 import { Friend } from '../models/friends.js';
 import HttpError from '../models/http-error.js';
 import { matchedData, validationResult } from 'express-validator';
+import { getRecieverSocketId } from '../common/socket.js';
 import { Notification } from '../models/notifications.js';
+import { Message } from '../models/messages.js';
 import { createNotification } from './notifications.js';
 
 const createPost = async (req, res, next) => {
@@ -32,8 +34,7 @@ const createPost = async (req, res, next) => {
 
     if (image) {
       const uploadResponse = await uploadImage(image.buffer, image.originalname);
-      imageUrl = uploadResponse.url,
-      imageFileId = uploadResponse.fileId
+      (imageUrl = uploadResponse.url), (imageFileId = uploadResponse.fileId);
     }
 
     const post = await Post.create({
@@ -125,7 +126,7 @@ const addComment = async (req, res, next) => {
         targetUser: post.author._id,
         relatedPost: postId,
         message: `${commentAuthor.username} commented on your post.`,
-        type: 'comment'
+        type: 'comment',
       });
     }
 
@@ -216,6 +217,40 @@ const getMemberPosts = async (req, res, next) => {
   } catch (error) {
     return next(new HttpError(error, error.errorCode || 500));
   }
+};
+
+export const sharePost = async (req, res) => {
+  const { recipients, text } = req.body;
+  const senderId = req.verifiedMember._id;
+
+  const ids = Array.isArray(recipients)
+    ? recipients
+    : String(recipients)
+        .replace(/\s+/g, '') // strip whitespace and newlines
+        .split(',') // split by comma
+        .filter(Boolean); // remove empty entries
+
+  const validRecipients = await Member.find({ _id: { $in: ids } }, '_id');
+  if (validRecipients.length !== ids.length) {
+    throw new HttpError('Invalid recipient(s)', 404);
+  }
+
+  const createdAt = new Date();
+  const messages = validRecipients.map((r) => ({
+    senderId,
+    recipientId: r._id,
+    text,
+    createdAt,
+  }));
+
+  await Message.insertMany(messages);
+
+  for (const m of messages) {
+    const socketId = getRecieverSocketId(m.recipientId);
+    if (socketId) io.to(socketId).emit('newMessage', m);
+  }
+
+  res.json(messages);
 };
 
 export {

@@ -1,7 +1,7 @@
 import useStore from '@/hooks/useStore';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import SharePost from './SharePost';
+
 import { Heart, MessageSquare, SendIcon } from 'lucide-react';
 
 const PostFeed = () => {
@@ -14,7 +14,7 @@ const PostFeed = () => {
     addComment,
     loggedInMember,
     setShowSharePost,
-    showSharePost,
+    setSharePostId,
   } = useStore((state) => state);
 
   const [commentInputs, setCommentInputs] = useState<{ [key: string]: string }>({});
@@ -106,7 +106,10 @@ const PostFeed = () => {
               </Link>
               <button
                 className="flex items-center text-foreground hover:text-primary transition-colors"
-                onClick={() => setShowSharePost(true)}
+                onClick={() => {
+                  setSharePostId(post._id);
+                  setShowSharePost(true);
+                }}
               >
                 <SendIcon className="w-6 h-6" />
               </button>
