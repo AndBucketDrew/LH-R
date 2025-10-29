@@ -64,7 +64,7 @@ router.post(
   body('firstName').trim().escape().isLength({ min: 2, max: 50 }),
   body('lastName').trim().escape().isLength({ min: 2, max: 50 }),
   body('username').trim().escape().isLength({ min: 4, max: 50 }),
-  body('email').escape().isEmail().toLowerCase().normalizeEmail(),
+  body('email').isEmail().toLowerCase().normalizeEmail({ gmail_remove_dots: false }),
   body('password').escape().isLength({ min: 6, max: 50 }),
   body('confirmPassword').escape().isLength({ min: 6, max: 50 }),
   signup
