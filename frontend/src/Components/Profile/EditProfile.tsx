@@ -8,7 +8,7 @@ import useForm from '@/hooks/useForm';
 //3rd lib
 import { Camera, Mail, User, AtSign } from 'lucide-react';
 import { toast } from 'sonner';
-import type { UserData } from '../AuthForm/SignUpForm';
+import type { UserData } from '../Auth/SignUpForm';
 
 const EditProfile = () => {
   const { loggedInMember, isUpdatingProfile, editProfile } = useStore();

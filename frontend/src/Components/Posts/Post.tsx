@@ -35,15 +35,16 @@ const Post = () => {
   const [commentsToShow, setCommentsToShow] = useState(10);
 
   const isAuthor = loggedInMember?._id === currentPost?.author?._id;
-
+  const userId = loggedInMember?._id
+  
   const handleShowMore = () => {
     setCommentsToShow((prevCount) => prevCount + 10);
   };
-
+  
   useEffect(() => {
     if (id) fetchPostById(id);
   }, [id, fetchPostById]);
-
+  
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || !commentText.trim()) return;
@@ -54,7 +55,7 @@ const Post = () => {
       console.error('Error adding comment:', err);
     }
   };
-
+  
   const handleDelete = async () => {
     try {
       if (id) {
@@ -65,7 +66,7 @@ const Post = () => {
       console.error('Error deleting post:', err);
     }
   };
-
+  
   if (loading)
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
@@ -137,7 +138,7 @@ const Post = () => {
               onClick={() => toggleLike(id!)}
               className="flex items-center text-foreground hover:text-primary transition-colors"
             >
-              {currentPost.likes?.includes(loggedInMember?._id) ? (
+              {userId && currentPost.likes?.includes(userId) ? (
                 <Heart className="w-6 h-6 text-destructive fill-destructive" />
               ) : (
                 <Heart className="w-6 h-6" />
@@ -174,7 +175,7 @@ const Post = () => {
 
         {/* Comments */}
         <div className="px-3 pb-2 max-h-60 overflow-y-auto">
-          {currentPost?.comments?.length > 0 ? (
+          {currentPost?.comments && currentPost.comments.length > 0 ? (
             [...currentPost.comments]
               .reverse()
               .slice(0, commentsToShow)
@@ -197,7 +198,7 @@ const Post = () => {
         </div>
 
         {/* Show More Comments */}
-        {currentPost.comments.length > commentsToShow && (
+        {(currentPost.comments?.length ?? 0) > commentsToShow && (
           <div className="px-3 pb-2">
             <button
               onClick={handleShowMore}

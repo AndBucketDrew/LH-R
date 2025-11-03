@@ -1,4 +1,4 @@
-import { LoginForm } from "@/Components/AuthForm/LoginForm";
+import { LoginForm } from "@/Components/Auth/LoginForm";
 
 
 export function LoginPage() {

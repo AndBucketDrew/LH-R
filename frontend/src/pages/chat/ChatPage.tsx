@@ -1,9 +1,9 @@
-import useStore from '@/hooks/useStore';
-import Sidebar from './Sidebar/Sidebar';
-import NoChatSelected from './Chat/NoChatSelected';
-import ChatContainer from './Chat/ChatContainer';
+import { useStore } from '@/hooks';
+import Sidebar from '@/Components/MessagePage/Sidebar/Sidebar';
+import NoChatSelected from '@/Components/Chat/NoChatSelected';
+import ChatContainer from '@/Components/Chat/ChatContainer';
 
-const MessagePage = () => {
+const ChatPage = () => {
   const { selectedUser } = useStore((state) => state);
 
   return (
@@ -21,4 +21,4 @@ const MessagePage = () => {
   );
 };
 
-export default MessagePage;
+export default ChatPage;

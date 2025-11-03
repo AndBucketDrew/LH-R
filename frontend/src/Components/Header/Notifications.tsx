@@ -24,7 +24,6 @@ export default function Notifications() {
     markAsRead,
     markAllAsRead,
     subscribeToNotifications,
-    // unsubscribeFromNotifications
   } = useStore((state) => state);
 
   const navigate = useNavigate();

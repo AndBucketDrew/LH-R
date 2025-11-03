@@ -1,6 +1,6 @@
 import FriendsBar from '@/Components/Feed/FriendsBar/FriendsBar';
 import type { FC } from 'react';
-import { PostFeed } from '@/Components/Feed/MainFeed/PostsFeed';
+import { PostFeed } from '@/Components/Posts/PostsFeed';
 import { useWindowWidth } from '@/hooks';
 const LeftSidebar: FC = () => <div className="bg-card p-4">Left Sidebar</div>;
 // const MainFeed: FC = () => <div className="bg-card p-4">Main Feed</div>;

@@ -14,17 +14,21 @@ import { SetNewPasswordPage } from './pages/auth/SetNewPasswordPage';
 import { SignupPage } from './pages/auth/SignupPage';
 import { LoginPage } from './pages/auth/LoginPage';
 
+//Posts
+
+//Chat
+import ChatPage from './pages/chat/ChatPage';
+
 import Header from './Components/Header/Header';
 import './App.css';
 import FeedPage from './pages/feed/FeedPage';
 import AddPost from './Components/AddPost/AddPost';
 import EditProfile from './Components/Profile/EditProfile';
 import ChangePassword from './Components/Profile/ChangePassword';
-import { Post } from './Components/Feed/MainFeed/Post';
+import { Post } from './Components/Posts/Post';
 import Profile from './Components/Profile/Profile';
-import MessagePage from './Components/MessagePage/MessagePage';
 import MemberProfile from './Components/Profile/MemberProfile';
-import SharePost from './Components/Feed/MainFeed/SharePost';
+import SharePost from './Components/Posts/SharePost';
 import FooterNav from './Components/Footer/Footer';
 import { SearchResults } from './Components/SearchResults/SearchResults';
 
@@ -66,7 +70,7 @@ function App() {
         <Route path="/posts/:id" element={<Post />} />
         <Route path="/members/:username" element={<MemberProfile />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/messages" element={<MessagePage />} />
+        <Route path="/messages" element={<ChatPage />} />
         <Route path="/results" element={<SearchResults />} />
         {/* <Route path="/post" element={<Post />} /> */}
       </Routes>
