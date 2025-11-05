@@ -16,6 +16,27 @@ photoSchema.pre('save', function (next) {
   next();
 });
 
+// New location schema
+const locationSchema = new Schema({
+  city: { type: String },
+  country: { type: String },
+  countryCode: { type: String }, // "US", "RS"
+  coordinates: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      default: [0, 0],
+    },
+  },
+});
+
+// Create geospatial index for efficient location queries
+locationSchema.index({ coordinates: '2dsphere' });
+
 const membersSchema = new Schema(
   {
     username: { type: String, required: true, unique: true },
@@ -23,11 +44,14 @@ const membersSchema = new Schema(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
-
     photo: { type: photoSchema, required: false },
+    location: { type: locationSchema, required: false },
   },
   { timestamps: true }
 );
+
+// Create index on location.coordinates for geospatial queries
+membersSchema.index({ 'location.coordinates': '2dsphere' });
 
 const passwordsSchema = new Schema(
   {
@@ -50,12 +74,10 @@ const resettokensSchema = new Schema(
   { timestamps: true }
 );
 
-// dem Member-Model eine Methode hinzufügen
 membersSchema.methods.getAge = function () {
   return getAge(this.birthYear, this.birthMonth, this.birthDay);
 };
 
-// automatisch vor dem Speichern Alter und Sternzeichen ermittelt werden
 membersSchema.pre('save', function (next) {
   const member = this;
   member.age = getAge(this.birthYear, this.birthMonth, this.birthDay);
@@ -63,13 +85,11 @@ membersSchema.pre('save', function (next) {
   next();
 });
 
-// automatisch vor dem Löschen verknüpfte Inhalte anderer Collections entfernen
 membersSchema.post('findOneAndDelete', async (deletedMember) => {
   if (deletedMember) {
     await Friend.deleteOne({ member: deletedMember._id });
     await Password.deleteMany({ member: deletedMember._id });
     await Resettoken.deleteMany({ member: deletedMember._id });
-    // TODO: weitere Collections beachten wie z.B. hearts, visits, usw.
   }
 });
 

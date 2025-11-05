@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Member, Password, Resettoken } from '../models/members.js';
 import { Friend } from '../models/friends.js';
+import geoip from 'geoip-lite';
 
 import HttpError from '../models/http-error.js';
 
@@ -37,10 +38,62 @@ const transporter = nodemailer.createTransport({
 // Resttoken-Gültigkeit: 5 Minuten
 const RESETTOKEN_EXPIRATION_TIME = 1000 * 60 * 5;
 
+const getLocationFromIP = (req) => {
+  // Try to get real IP (considering proxies/load balancers)
+  const ip =
+    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+    req.headers['x-real-ip'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.ip;
+
+  // Remove IPv6 prefix if present
+  const cleanIP = ip.replace('::ffff:', '');
+
+  // 🔧 DEVELOPMENT: Hardcode Belgrade for localhost
+  if (cleanIP === '127.0.0.1' || cleanIP === '::1' || !cleanIP) {
+    return {
+      city: 'Belgrade',
+      country: 'Serbia',
+      countryCode: 'RS',
+      coordinates: {
+        type: 'Point',
+        coordinates: [20.4489, 44.7866],
+      },
+    };
+  }
+
+  // Get geolocation data
+  const geo = geoip.lookup(cleanIP);
+
+  if (geo) {
+    return {
+      city: geo.city || 'Unknown',
+      country: geo.country || 'Unknown',
+      countryCode: geo.country || 'XX',
+      coordinates: {
+        type: 'Point',
+        coordinates: [geo.ll[1], geo.ll[0]], // [longitude, latitude]
+      },
+    };
+  }
+
+  // Fallback if IP lookup fails
+  return {
+    city: 'Unknown',
+    country: 'Unknown',
+    countryCode: 'XX',
+    coordinates: {
+      type: 'Point',
+      coordinates: [0, 0],
+    },
+  };
+};
+
+// Updated signup function
 const signup = async (req, res, next) => {
   let photo;
   try {
-    // Daten validieren
     const result = validationResult(req);
 
     if (result.errors.length > 0) {
@@ -52,11 +105,15 @@ const signup = async (req, res, next) => {
     // Password generiert
     const password = getHash(data.password);
 
+    // NEW: Get location from IP
+    const location = getLocationFromIP(req);
+
     let newMember;
 
-    // neuen Member erschaffen (photo is optional, defaults to model pre-save hook if not provided)
+    // neuen Member erschaffen with location
     const createdMember = new Member({
       ...data,
+      location, // NEW: Add location
       photo: req.file
         ? {
             fileId: (await uploadImage(req.file.buffer, req.file.originalname)).fileId,
@@ -65,11 +122,9 @@ const signup = async (req, res, next) => {
         : {},
     });
 
-    // Member speichern und Password speichern in einer Transaktion
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    // Member speichern
     newMember = await createdMember.save({ session });
 
     const createdPassword = new Password({
@@ -80,8 +135,8 @@ const signup = async (req, res, next) => {
     await createdPassword.save({ session });
 
     await session.commitTransaction();
-
     session.endSession();
+
     const link = process.env.FRONTEND_URL;
 
     const signupHtmlTemplate = path.join(templatesDir, 'signup.html');
@@ -100,11 +155,11 @@ const signup = async (req, res, next) => {
       .replace('[LINK]', link);
 
     await transporter.sendMail({
-      from: 'noreply.env <noreply.envv@gmail.com>', // sender address
-      to: `${req.body.email}`, // list of receivers
-      subject: `Welcome, ${req.body.firstName}!`, // Subject line
-      text: signupText, // plain text body
-      html: signupHtml, // html body
+      from: 'noreply.env <noreply.envv@gmail.com>',
+      to: `${req.body.email}`,
+      subject: `Welcome, ${req.body.firstName}!`,
+      text: signupText,
+      html: signupHtml,
     });
 
     res.status(201).json(newMember);

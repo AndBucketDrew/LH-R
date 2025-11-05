@@ -47,6 +47,7 @@ import {
   getUnreadNotifications,
   markRead,
 } from '../controllers/notifications.js';
+import { getRecommendations, updateLocation } from '../controllers/recommendations.js';
 
 const router = new Router();
 
@@ -54,6 +55,8 @@ router.get('/members', getAllMembers);
 router.get('/members/search', checkToken, filterMember);
 router.get('/members/:id', getOneMember);
 router.get('/members/username/:username', getMemberByUsername);
+router.get('/location/recommended', checkToken, getRecommendations);
+router.patch('/location/update', checkToken, updateLocation);
 
 router.get('/notifications', checkToken, getNotifications);
 router.get('/notifications/unread', checkToken, getUnreadNotifications);
