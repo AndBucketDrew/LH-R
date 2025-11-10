@@ -108,6 +108,8 @@ const getRecommendations = async (req, res, next) => {
 
       const additionalUsers = await Member.find({
         _id: { $nin: additionalExcluded },
+        'location.coordinates.coordinates.0': { $ne: 0 }, // Only users with valid location
+        'location.coordinates.coordinates.1': { $ne: 0 },
       })
         .select('username firstName lastName photo location')
         .limit(20 - nearbyUsers.length)
@@ -121,15 +123,26 @@ const getRecommendations = async (req, res, next) => {
             { latitude: userLat, longitude: userLng },
             { latitude: lat, longitude: lng }
           );
-        } else {
-          user.distance = null;
         }
       });
 
       nearbyUsers = [...nearbyUsers, ...additionalUsers];
     }
 
-    res.json(nearbyUsers);
+    // Remove distance field from response (users don't need to see exact meters)
+    const recommendations = nearbyUsers.map((user) => ({
+      _id: user._id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      photo: user.photo,
+      location: {
+        city: user.location?.city,
+        country: user.location?.country,
+      },
+    }));
+
+    res.json(recommendations);
   } catch (error) {
     console.error('Error in getRecommendations:', error);
     return next(new HttpError(error.message || 'Failed to get recommendations', 500));

@@ -20,7 +20,7 @@ photoSchema.pre('save', function (next) {
 const locationSchema = new Schema({
   city: { type: String },
   country: { type: String },
-  countryCode: { type: String }, // "US", "RS"
+  countryCode: { type: String }, // e.g., "US", "RS"
   coordinates: {
     type: {
       type: String,
@@ -34,9 +34,6 @@ const locationSchema = new Schema({
   },
 });
 
-// Create geospatial index for efficient location queries
-locationSchema.index({ coordinates: '2dsphere' });
-
 const membersSchema = new Schema(
   {
     username: { type: String, required: true, unique: true },
@@ -45,7 +42,7 @@ const membersSchema = new Schema(
     lastName: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
     photo: { type: photoSchema, required: false },
-    location: { type: locationSchema, required: false },
+    location: { type: locationSchema, required: false }, // NEW: Location data
   },
   { timestamps: true }
 );

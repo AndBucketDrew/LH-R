@@ -65,12 +65,13 @@ router.patch('/notifications/read/:id', checkToken, markRead);
 
 router.post(
   '/members/signup',
-  body('firstName').trim().escape().isLength({ min: 2, max: 50 }),
-  body('lastName').trim().escape().isLength({ min: 2, max: 50 }),
-  body('username').trim().escape().isLength({ min: 4, max: 50 }),
+  upload.none(),
+  body('firstName').trim().isLength({ min: 2, max: 50 }),
+  body('lastName').trim().isLength({ min: 2, max: 50 }),
+  body('username').trim().isLength({ min: 4, max: 50 }),
   body('email').isEmail().toLowerCase().normalizeEmail({ gmail_remove_dots: false }),
-  body('password').escape().isLength({ min: 6, max: 50 }),
-  body('confirmPassword').escape().isLength({ min: 6, max: 50 }),
+  body('password').isLength({ min: 6, max: 50 }),
+  body('confirmPassword').isLength({ min: 6, max: 50 }),
   signup
 );
 
