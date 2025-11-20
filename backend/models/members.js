@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { getZodiac, getAge } from '../common/index.js';
+import { Friend } from './friends.js';
 
 const Schema = mongoose.Schema;
 
@@ -84,9 +85,35 @@ membersSchema.pre('save', function (next) {
 
 membersSchema.post('findOneAndDelete', async (deletedMember) => {
   if (deletedMember) {
-    await Friend.deleteOne({ member: deletedMember._id });
-    await Password.deleteMany({ member: deletedMember._id });
-    await Resettoken.deleteMany({ member: deletedMember._id });
+    const { Post } = await import('./posts.js');
+    const { Comment } = await import('./comments.js');
+
+    try {
+      // Delete Friend document
+      await Friend.deleteOne({ member: deletedMember._id });
+
+      // Remove from other users' friend lists
+      await Friend.updateMany(
+        { friends: deletedMember._id },
+        { $pull: { friends: deletedMember._id } }
+      );
+
+      // Remove from pending requests
+      await Friend.updateMany(
+        { pendingFriendRequests: deletedMember._id },
+        { $pull: { pendingFriendRequests: deletedMember._id } }
+      );
+
+      // Delete posts and comments
+      await Post.deleteMany({ author: deletedMember._id });
+      await Comment.deleteMany({ author: deletedMember._id });
+
+      // Delete passwords and tokens
+      await Password.deleteMany({ member: deletedMember._id });
+      await Resettoken.deleteMany({ member: deletedMember._id });
+    } catch (error) {
+      console.error('Cleanup error in post-hook:', error);
+    }
   }
 });
 

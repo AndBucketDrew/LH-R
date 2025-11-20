@@ -35,7 +35,7 @@ export interface MemberStore {
   searchMembersFriends: (q: string) => Promise<IMember[]>;
   searchMembersWide: (q: string, limit?: number) => Promise<IMember[]>;
   getMemberById: (id: string) => Promise<IMember>;
-  deleteMember: (id: string) => Promise<any>;
+  deleteMember: (id: string | undefined) => Promise<any>;
   getMemberByUsername: (username: string) => Promise<IMember>;
   memberSignup: (data: SignupCredentials) => Promise<boolean>;
   memberLogout: () => void;
@@ -416,24 +416,29 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
     }
   },
 
-  deleteMember: async (id: string) => {
+  deleteMember: async (id: string | undefined) => {
     const token = localStorage.getItem('lh_token');
     if (!token) throw new Error('No token found');
 
     try {
       await fetchAPI({
-        method: 'post',
+        method: 'delete',
         url: `/members/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      toast.success('Member deleted');
+      // Clear token and logout
+      localStorage.removeItem('lh_token');
+      set({ loggedInMember: null });
+
+      toast.success('Account deleted successfully');
+
       return true;
     } catch (error: any) {
-      console.error('error in updating profile', error);
-      toast.error(error.response?.data?.message || error.message || 'Update failed');
+      console.error('error in deleting member', error);
+      toast.error(error.response?.data?.message || error.message || 'Delete failed');
       return false;
     }
   },

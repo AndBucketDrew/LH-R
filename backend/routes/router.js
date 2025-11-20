@@ -63,6 +63,8 @@ router.get('/notifications/unread', checkToken, getUnreadNotifications);
 router.get('/notifications/unread/count', checkToken, getUnreadCount);
 router.patch('/notifications/read/:id', checkToken, markRead);
 
+router.delete('/members/:id', checkToken, deleteMember);
+
 router.post(
   '/members/signup',
   upload.none(),
@@ -100,8 +102,6 @@ router.post(
   body('password').escape().notEmpty().withMessage('Password is required'),
   login
 );
-
-router.delete('/members/:id', checkToken, deleteMember);
 
 router.post('/members/reset-password', resetPassword);
 

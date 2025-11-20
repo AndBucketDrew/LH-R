@@ -1,6 +1,6 @@
 //React
 import { useEffect, useState } from 'react';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
 //Hooks
 import useStore from '@/hooks/useStore';
@@ -8,8 +8,8 @@ import useStore from '@/hooks/useStore';
 //3rd lib
 import { Camera, Mail, User, AtSign } from 'lucide-react';
 import { toast } from 'sonner';
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 //UI
 import {
@@ -21,34 +21,42 @@ import {
   FormControl,
   Input,
   Button,
-} from "@/Components/ui";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/Components/ui';
 
 // ------------------------------
 // OWN Edit Profile Schema
 // ------------------------------
-const EditProfileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email"),
-  password: z.string().optional(),
-  confirmPassword: z.string().optional(),
-  photo: z.any().optional(),
-}).refine((data) =>
-  data.password && data.confirmPassword
-    ? data.password === data.confirmPassword
-    : true,
-  {
-    path: ["confirmPassword"],
-    message: "Passwords must match",
-  }
-);
+const EditProfileSchema = z
+  .object({
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
+    username: z.string().min(1, 'Username is required'),
+    email: z.string().email('Invalid email'),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+    photo: z.any().optional(),
+  })
+  .refine(
+    (data) =>
+      data.password && data.confirmPassword ? data.password === data.confirmPassword : true,
+    {
+      path: ['confirmPassword'],
+      message: 'Passwords must match',
+    }
+  );
 
 type EditProfileData = z.infer<typeof EditProfileSchema>;
 
 const EditProfile = () => {
-  const { loggedInMember, isUpdatingProfile, editProfile } = useStore();
-
+  const { loggedInMember, isUpdatingProfile, editProfile, deleteMember } = useStore();
+  const [showDelete, setShowDelete] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // ------------------------------
@@ -57,14 +65,14 @@ const EditProfile = () => {
   const form = useForm<EditProfileData>({
     resolver: zodResolver(EditProfileSchema),
     defaultValues: {
-      firstName: loggedInMember?.firstName || "",
-      lastName: loggedInMember?.lastName || "",
-      username: loggedInMember?.username || "",
-      email: loggedInMember?.email || "",
-      password: "",
-      confirmPassword: "",
+      firstName: loggedInMember?.firstName || '',
+      lastName: loggedInMember?.lastName || '',
+      username: loggedInMember?.username || '',
+      email: loggedInMember?.email || '',
+      password: '',
+      confirmPassword: '',
       photo: null,
-    }
+    },
   });
 
   const { setValue } = form;
@@ -72,10 +80,10 @@ const EditProfile = () => {
   // Sync when member data updates
   useEffect(() => {
     if (!loggedInMember) return;
-    setValue("firstName", loggedInMember.firstName || "");
-    setValue("lastName", loggedInMember.lastName || "");
-    setValue("username", loggedInMember.username || "");
-    setValue("email", loggedInMember.email || "");
+    setValue('firstName', loggedInMember.firstName || '');
+    setValue('lastName', loggedInMember.lastName || '');
+    setValue('username', loggedInMember.username || '');
+    setValue('email', loggedInMember.email || '');
   }, [loggedInMember, setValue]);
 
   // Handle photo
@@ -83,7 +91,7 @@ const EditProfile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setValue("photo", file);
+    setValue('photo', file);
 
     const reader = new FileReader();
     reader.onload = () => setPreviewImage(reader.result as string);
@@ -99,155 +107,222 @@ const EditProfile = () => {
 
     const response = await editProfile(formData);
 
-    if (response) toast.success("Profile edited successfully!");
-    else toast.error("Error while editing!");
+    if (response) {
+      toast.success('Profile edited successfully!');
+    } else {
+      toast.error('Error while editing!');
+    }
   });
 
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteMember(loggedInMember?._id);
+      toast.success('Profile deleted successfully! Logging out!');
+    } catch (err) {
+      console.error('Delete error (but proceeding with logout):', err);
+      toast.error('Profile deleted, but logout failed—please refresh.');
+    } finally {
+      setShowDelete(false);
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto p-4 py-8">
-      <div className="bg-base-300 rounded-xl p-6 space-y-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold">Edit Profile</h1>
-          <p className="mt-2">Your profile information</p>
-        </div>
+    <>
+      <div className="max-w-2xl mx-auto p-4 py-8">
+        <div className="bg-base-300 rounded-xl p-6 space-y-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold">Edit Profile</h1>
+            <p className="mt-2">Your profile information</p>
+          </div>
 
-        {/* Avatar */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <img
-              src={previewImage || loggedInMember?.photo?.url}
-              alt="Profile"
-              className="size-32 rounded-full object-cover border-4"
-            />
-
-            <label
-              htmlFor="avatar-upload"
-              className={`
-                absolute bottom-0 right-0 
-                bg-base-content hover:scale-105
-                p-2 rounded-full cursor-pointer 
-                transition-all duration-200
-                ${isUpdatingProfile ? "animate-pulse pointer-events-none" : ""}
-              `}
-            >
-              <Camera className="w-5 h-5 text-base-200" />
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                disabled={isUpdatingProfile}
-                onChange={handlePhotoChange}
+          {/* Avatar */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <img
+                src={previewImage || loggedInMember?.photo?.url}
+                alt="Profile"
+                className="size-32 rounded-full object-cover border-4"
               />
-            </label>
+
+              <label
+                htmlFor="avatar-upload"
+                className={`
+                  absolute bottom-0 right-0 
+                  bg-base-content hover:scale-105
+                  p-2 rounded-full cursor-pointer 
+                  transition-all duration-200
+                  ${isUpdatingProfile ? 'animate-pulse pointer-events-none' : ''}
+                `}
+              >
+                <Camera className="w-5 h-5 text-base-200" />
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={isUpdatingProfile}
+                  onChange={handlePhotoChange}
+                />
+              </label>
+            </div>
+
+            <p className="text-sm text-zinc-400">
+              {isUpdatingProfile ? 'Uploading...' : 'Click the camera icon to update your photo'}
+            </p>
           </div>
 
-          <p className="text-sm text-zinc-400">
-            {isUpdatingProfile ? "Uploading..." : "Click the camera icon to update your photo"}
-          </p>
-        </div>
+          {/* Form */}
+          <Form {...form}>
+            <form className="space-y-6" onSubmit={onSubmit}>
+              {/* First Name */}
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <User className="w-4 h-4" /> First Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input className="bg-base-200" placeholder="First Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Form */}
-        <Form {...form}>
-          <form className="space-y-6" onSubmit={onSubmit}>
-            
-            {/* First Name */}
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <User className="w-4 h-4" /> First Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input className="bg-base-200" placeholder="First Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Last Name */}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <User className="w-4 h-4" /> Last Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input className="bg-base-200" placeholder="Last Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Last Name */}
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <User className="w-4 h-4" /> Last Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input className="bg-base-200" placeholder="Last Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Username */}
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <AtSign className="w-4 h-4" /> Username
+                    </FormLabel>
+                    <FormControl>
+                      <Input className="bg-base-200" placeholder="Username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Username */}
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <AtSign className="w-4 h-4" /> Username
-                  </FormLabel>
-                  <FormControl>
-                    <Input className="bg-base-200" placeholder="Username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" /> Email Address
+                    </FormLabel>
+                    <FormControl>
+                      <Input className="bg-base-200" placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Email */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" /> Email Address
-                  </FormLabel>
-                  <FormControl>
-                    <Input className="bg-base-200" placeholder="Email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Save button */}
+              <Button
+                type="submit"
+                disabled={isUpdatingProfile}
+                className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
+              >
+                Save Changes
+              </Button>
+            </form>
+          </Form>
 
-            {/* Save button */}
-            <Button
-              type="submit"
-              disabled={isUpdatingProfile}
-              className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
-            >
-              Save Changes
-            </Button>
-
-          </form>
-        </Form>
-
-        {/* Account Info */}
-        <div className="mt-6 bg-base-300 rounded-xl p-6">
-          <h2 className="text-lg font-medium mb-4">Account Information</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between py-2 border-b border-zinc-700">
-              <span>Member Since</span>
-              <span>{loggedInMember?.createdAt?.split("T")[0]}</span>
-            </div>
-            <div className="flex items-center justify-between py-2">
-              <span>Account Status</span>
-              <span className="text-green-500">Active</span>
+          <div className="mt-6 bg-base-300 rounded-xl p-6">
+            <h2 className="text-lg font-medium mb-4">Account Information</h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between py-2 border-b border-zinc-700">
+                <span>Member Since</span>
+                <span>{loggedInMember?.createdAt?.split('T')[0]}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span>Account Status</span>
+                <span className="text-green-500">Active</span>
+              </div>
             </div>
           </div>
-        </div>
 
+          <button
+            onClick={() => setShowDelete(true)}
+            disabled={isUpdatingProfile}
+            className="w-full py-2 rounded-lg 
+               border border-red-700 
+               text-red-700 
+               bg-transparent
+               hover:bg-red-700
+               hover:border-red-700 
+               hover:text-white
+               disabled:opacity-50"
+          >
+            Delete Profile
+          </button>
+        </div>
       </div>
-    </div>
+
+      {showDelete && (
+        <Dialog open={showDelete} onOpenChange={setShowDelete}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Confirm Delete Profile</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete your profile? This action cannot be undone and will
+                remove all your posts, friends, and data.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 py-4">
+              <p className="text-sm text-destructive">Username: @{loggedInMember?.username}</p>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="outline" onClick={() => setShowDelete(false)}>
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                type="button"
+                className=" 
+               border border-red-700 
+               text-red-700 
+               bg-transparent
+               hover:bg-red-700
+               hover:border-red-700 
+               hover:text-white
+               disabled:opacity-50"
+                onClick={handleConfirmDelete}
+                disabled={isUpdatingProfile}
+              >
+                Delete Profile
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 
