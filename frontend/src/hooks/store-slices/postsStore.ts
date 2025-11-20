@@ -26,7 +26,7 @@ export interface PostsStore {
   fetchAllPosts: () => Promise<void>;
   fetchFriendsPosts: () => Promise<void>;
   clearCurrentPost: () => Promise<void>;
-  uploadPost: (data: IPost) => Promise<boolean>;
+  uploadPost: (data: IPost | FormData) => Promise<boolean>;
   toggleLike: (postId: string) => Promise<void>;
   addComment: (postId: string, data: { text: string }) => Promise<void>;
   sharePost: (memberIds: string[], postId: string) => Promise<void>;
@@ -146,7 +146,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
     }
   },
 
-  uploadPost: async (data: IPost): Promise<boolean> => {
+  uploadPost: async (data: IPost | FormData): Promise<boolean> => {
     try {
       const token = localStorage.getItem('lh_token');
       const response = await fetchAPI({
