@@ -1,26 +1,15 @@
 import * as dotenv from 'dotenv';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
-
 import HttpError from '../models/http-error.js';
+import NewsAPI from 'newsapi';
+import cron from 'node-cron';
+import { News } from '../models/news.js';
 
+const newsapi = new NewsAPI('127492f7631c44d6b2347add9a84f6c0');
 import { Member } from '../models/members.js';
 
 dotenv.config();
-
-// Middleware multer erzeugen
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, './uploads');
-//   },
-//   filename: (req, file, cb) => {
-// const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-// cb(null, file.fieldname + '-' + uniqueSuffix);
-//     const extArray = file.mimetype.split('/');
-//     const extension = extArray[extArray.length - 1];
-//     cb(null, file.fieldname + '-' + Date.now() + '.' + extension);
-//   },
-// });
 
 const storage = multer.memoryStorage(); //Store the file in memory buffer
 
@@ -43,6 +32,27 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage, limits, fileFilter });
+
+async function scheduleNews() {
+  cron.schedule('0 * * * *', async () => {
+    try {
+      const response = await newsapi.v2.everything({
+        q: 'javascript',
+        language: 'en',
+        sortBy: 'publishedAt',
+      });
+
+      const limitedArticles = response.articles.slice(0, 10);
+
+      await News.deleteMany({});
+      await News.insertMany(limitedArticles, { ordered: false });
+
+      console.log('News updated successfully at', new Date().toISOString());
+    } catch (error) {
+      console.error('Error fetching API data | ', error.message);
+    }
+  });
+}
 
 // Middleware für Tokenüberprüfung
 const checkToken = async (req, res, next) => {
@@ -84,4 +94,4 @@ const checkToken = async (req, res, next) => {
   }
 };
 
-export { upload, checkToken };
+export { upload, checkToken, scheduleNews };

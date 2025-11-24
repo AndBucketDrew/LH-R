@@ -50,7 +50,7 @@ const getLocationFromIP = (req) => {
   // Remove IPv6 prefix if present
   const cleanIP = ip.replace('::ffff:', '');
 
-  // 🔧 DEVELOPMENT: Hardcode Belgrade for localhost
+  // DEVELOPMENT: Hardcode Belgrade for localhost
   if (cleanIP === '127.0.0.1' || cleanIP === '::1' || !cleanIP) {
     return {
       city: 'Belgrade',

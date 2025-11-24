@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
+import { scheduleNews } from './common/middlewares.js';
 
 import HttpError from './models/http-error.js';
 
@@ -29,6 +30,7 @@ app.use(
 );
 // JSON parser
 app.use(express.json());
+scheduleNews();
 
 // Form body parser
 app.use(express.urlencoded({ extended: true }));
