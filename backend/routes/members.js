@@ -47,10 +47,10 @@ router.post(
 
 router.get('/', getAllMembers);
 router.get('/username/:username', getMemberByUsername);
+router.get('/search', checkToken, filterMember);
 router.get('/:id', getOneMember);
 
 // Protected routes
-router.get('/search', checkToken, filterMember);
 
 router.patch(
   '/change-password',
