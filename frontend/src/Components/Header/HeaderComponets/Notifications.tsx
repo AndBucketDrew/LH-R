@@ -8,7 +8,7 @@ import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-  Button
+  Button,
 } from '@/Components/ui';
 import { useEffect, useState } from 'react';
 import { BellIcon } from 'lucide-react';
@@ -89,11 +89,12 @@ export default function Notifications() {
         className="w-80 p-2 dark:bg-gray-900 bg-white shadow-lg rounded-xl"
       >
         <DropdownMenuLabel className="flex justify-between items-center">
-          <span className="font-semibold text-foreground">
-            Notifications
-          </span>
+          <span className="font-semibold text-foreground">Notifications</span>
           {unreadCount > 0 && (
-            <Button onClick={markAllAsRead} className='bg-transparent border-transparent text-foreground text-sm'>
+            <Button
+              onClick={markAllAsRead}
+              className="bg-transparent border-transparent text-foreground text-sm"
+            >
               Mark all as read
             </Button>
           )}
@@ -103,9 +104,7 @@ export default function Notifications() {
 
         <div className="max-h-[300px] overflow-y-auto">
           {notifications.length === 0 && (
-            <p className="text-center text-sm text-gray-500 py-4">
-              No notifications yet
-            </p>
+            <p className="text-center text-sm text-gray-500 py-4">No notifications yet</p>
           )}
 
           {notifications.map((n) => (
@@ -119,19 +118,15 @@ export default function Notifications() {
             >
               <Avatar className="w-10 h-10">
                 <AvatarImage
-                  src={n.fromUser?.photo?.url}
+                  src={`${n.fromUser?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                   alt={n.fromUser?.username}
                   className="w-full h-full object-cover"
                 />
-                <AvatarFallback>
-                  {n.fromUser?.username?.[0]?.toUpperCase() || '?'}
-                </AvatarFallback>
+                <AvatarFallback>{n.fromUser?.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
               </Avatar>
 
               <div className="flex-1">
-                <p className="text-sm text-gray-800 dark:text-gray-200">
-                  {n.message}
-                </p>
+                <p className="text-sm text-gray-800 dark:text-gray-200">{n.message}</p>
                 <p className="text-xs text-gray-500">
                   {new Date(n.createdAt).toLocaleTimeString([], {
                     hour: '2-digit',

@@ -60,7 +60,7 @@ const RecommendationBar: FC<RecommendationBarProps> = ({ onAddFriend }) => {
     <aside className="w-80 flex-shrink-0 space-y-6">
       <div className="sticky space-y-6">
         {/* Latest News */}
-        <div className="bg-card rounded-xl border border-border/60 shadow-sm">
+        <div className="bg-card rounded-lg border border-border/60 shadow-sm">
           <div className="flex items-center gap-2.5 px-5 pt-4 pb-3">
             <div className="p-1.5 bg-primary/10 rounded-lg">
               <Newspaper className="w-4 h-4 text-primary" />
@@ -90,7 +90,7 @@ const RecommendationBar: FC<RecommendationBarProps> = ({ onAddFriend }) => {
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-start gap-2.5 py-2.5 px-3 -mx-3 rounded-xl transition-all hover:bg-accent/70"
+                  className="group flex items-start gap-2 py-2.5 px-4 -mx-3 rounded-xl transition-all hover:bg-accent/70"
                 >
                   {/* Favicon / Number — perfectly aligned */}
                   <div className="flex-shrink-0 w-5 h-5 mt-0.5">
@@ -128,7 +128,7 @@ const RecommendationBar: FC<RecommendationBarProps> = ({ onAddFriend }) => {
         </div>
 
         {/* Friend Recommendations */}
-        <div className="bg-card rounded-xl border shadow-sm p-1">
+        <div className="bg-card rounded-lg border shadow-sm p-1">
           <SidebarFriendRecommendations onAddFriend={onAddFriend} />
         </div>
       </div>

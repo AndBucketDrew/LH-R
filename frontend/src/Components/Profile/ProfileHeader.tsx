@@ -9,7 +9,7 @@ export default function ProfileHeader() {
       {/* Profile Picture */}
       <div className="flex justify-center -mt-16">
         <img
-          src={loggedInMember?.photo?.url}
+          src={`${loggedInMember?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
           alt="Profile"
           className="w-32 h-32 rounded-full border-4 border-background object-cover"
         />

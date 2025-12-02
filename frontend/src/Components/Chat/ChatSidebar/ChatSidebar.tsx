@@ -97,7 +97,7 @@ const ChatSidebar = () => {
           >
             <div className="relative mx-auto lg:mx-0">
               <img
-                src={friend.photo?.url}
+                src={`${friend?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                 alt={friend.firstName[0]}
                 className="size-12 object-cover rounded-full"
               />

@@ -44,7 +44,7 @@ type ChangePasswordData = z.infer<typeof ChangePasswordSchema>;
 
 const ChangePassword = () => {
   const { loggedInMember, isUpdatingProfile, memberChangePassword, memberLogout } = useStore();
-  
+
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -86,11 +86,11 @@ const ChangePassword = () => {
       const { alert } = useStore.getState();
       console.log('alert is ', alert);
       const msg = alert?.description?.toLowerCase();
-      
+
       if (msg?.includes('old password')) {
-        setError('oldPassword', { 
-          type: 'manual', 
-          message: alert?.description || 'Invalid old password' 
+        setError('oldPassword', {
+          type: 'manual',
+          message: alert?.description || 'Invalid old password',
         });
       } else {
         setError('root', {
@@ -114,7 +114,7 @@ const ChangePassword = () => {
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
             <img
-              src={loggedInMember?.photo?.url}
+              src={`${loggedInMember?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
               alt="Profile Picture"
               className="size-32 rounded-full object-cover border-4"
             />
@@ -139,9 +139,7 @@ const ChangePassword = () => {
                         type={showOldPassword ? 'text' : 'password'}
                         placeholder="Old Password"
                         className={`px-4 py-2.5 bg-base-200 rounded-lg border w-full placeholder-zinc-700 pr-10 ${
-                          form.formState.errors.oldPassword
-                            ? 'border-red-500 shake'
-                            : ''
+                          form.formState.errors.oldPassword ? 'border-red-500 shake' : ''
                         }`}
                         {...field}
                       />
@@ -175,9 +173,7 @@ const ChangePassword = () => {
                         type={showNewPassword ? 'text' : 'password'}
                         placeholder="New Password"
                         className={`px-4 py-2.5 bg-base-200 rounded-lg border w-full placeholder-zinc-700 pr-10 ${
-                          form.formState.errors.newPassword
-                            ? 'border-red-500 shake'
-                            : ''
+                          form.formState.errors.newPassword ? 'border-red-500 shake' : ''
                         }`}
                         {...field}
                       />
@@ -211,9 +207,7 @@ const ChangePassword = () => {
                         type={showConfirmPassword ? 'text' : 'password'}
                         placeholder="Confirm Password"
                         className={`px-4 py-2.5 bg-base-200 rounded-lg border w-full placeholder-zinc-700 pr-10 ${
-                          form.formState.errors.confirmPassword
-                            ? 'border-red-500 shake'
-                            : ''
+                          form.formState.errors.confirmPassword ? 'border-red-500 shake' : ''
                         }`}
                         {...field}
                       />
@@ -233,9 +227,7 @@ const ChangePassword = () => {
 
             {/* Root error message */}
             {form.formState.errors.root && (
-              <p className="text-xs text-red-500">
-                {form.formState.errors.root.message}
-              </p>
+              <p className="text-xs text-red-500">{form.formState.errors.root.message}</p>
             )}
 
             <div className="mt-6 bg-base-300 rounded-xl p-6">

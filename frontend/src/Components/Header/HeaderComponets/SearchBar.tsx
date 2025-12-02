@@ -19,7 +19,10 @@ interface SearchBarProps {
   collapseThreshold?: number;
 }
 
-export default function SearchBar({ buttonMode = false, collapseThreshold = 1100 }: SearchBarProps) {
+export default function SearchBar({
+  buttonMode = false,
+  collapseThreshold = 1100,
+}: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,8 +48,6 @@ export default function SearchBar({ buttonMode = false, collapseThreshold = 1100
 
     return () => clearTimeout(debounce);
   }, [query, searchMembersFriends]);
-
-
 
   const handleSeeAll = () => {
     // Optionally store query in session/localStorage
@@ -103,10 +104,7 @@ export default function SearchBar({ buttonMode = false, collapseThreshold = 1100
                       className="flex items-center gap-2 w-full truncate"
                     >
                       <img
-                        src={
-                          member.photo?.url ||
-                          'https://ik.imagekit.io/LHR/user-octagon-svgrepo-com.svg'
-                        }
+                        src={`${member?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                         alt={member.username}
                         className="w-8 h-8 rounded-full object-cover"
                       />
@@ -148,5 +146,4 @@ export default function SearchBar({ buttonMode = false, collapseThreshold = 1100
       )}
     </div>
   );
-
 }

@@ -58,7 +58,7 @@ export default function FriendsSidebar() {
                 >
                   <div className="flex-shrink-0">
                     <img
-                      src={friend.photo?.url}
+                      src={`${friend?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                       alt={`${friend.firstName} ${friend.lastName}`}
                       className="w-10 h-10 rounded-full object-cover ring-1 ring-[--accent]/20 group-hover:ring-[--accent]"
                       loading="lazy"

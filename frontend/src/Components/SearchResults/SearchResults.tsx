@@ -1,9 +1,4 @@
-import {
-  Input,
-  Button,
-  Card,
-  CardContent
-} from '@/Components/ui';
+import { Input, Button, Card, CardContent } from '@/Components/ui';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useStore from '../../hooks/useStore.ts';
@@ -15,12 +10,8 @@ export function SearchResults() {
   const queryParams = searchParams.get('query') || '';
   const navigate = useNavigate();
 
-  const {
-    friendsSearchResults,
-    wideSearchResults,
-    searchMembersFriends,
-    searchMembersWide,
-  } = useStore((state) => state);
+  const { friendsSearchResults, wideSearchResults, searchMembersFriends, searchMembersWide } =
+    useStore((state) => state);
 
   const [query, setQuery] = useState(queryParams);
   const [showFriends, setShowFriends] = useState(true);
@@ -31,7 +22,7 @@ export function SearchResults() {
   //   if (!query) return;
 
   //   searchMembersFriends(query);
-  //   searchMembersWide(query, 10); 
+  //   searchMembersWide(query, 10);
   //   setShowAll(false);
   //   setShowFriends(true);
   // }, [query, searchMembersFriends, searchMembersWide]);
@@ -45,7 +36,6 @@ export function SearchResults() {
 
     return () => clearTimeout(debounce);
   }, [query, searchMembersFriends, searchMembersWide]);
-
 
   // Show more button handler
   const handleShowMore = () => {
@@ -63,7 +53,7 @@ export function SearchResults() {
   return (
     <div className="p-4 space-y-6 pt-14">
       {/* Top Search Input */}
-      <div className='flex justify-center'>
+      <div className="flex justify-center">
         <form onSubmit={handleSearchSubmit}>
           <div className="relative max-w-md w-3xl max-[600px]:w-full">
             <IoSearch className="absolute top-2 left-3 text-2xl" />
@@ -89,15 +79,23 @@ export function SearchResults() {
             <ul className="space-y-2">
               {friendsSearchResults.map((friend) => (
                 <li key={friend._id} className="flex items-center gap-3">
-                  <Link to={`/members/${friend.username}`} className="flex items-center gap-2 w-full">
+                  <Link
+                    to={`/members/${friend.username}`}
+                    className="flex items-center gap-2 w-full"
+                  >
                     <img
-                      src={friend.photo?.url || 'https://ik.imagekit.io/LHR/user-octagon-svgrepo-com.svg'}
+                      src={`${
+                        friend.photo?.url ||
+                        'https://ik.imagekit.io/LHR/user-octagon-svgrepo-com.svg'
+                      }?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                       alt={friend.username}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                     <div>
                       <p className="font-medium">{friend.username}</p>
-                      <p className="text-sm text-gray-500">{friend.firstName} {friend.lastName}</p>
+                      <p className="text-sm text-gray-500">
+                        {friend.firstName} {friend.lastName}
+                      </p>
                     </div>
                   </Link>
                 </li>
@@ -110,21 +108,23 @@ export function SearchResults() {
       {/* Wide Search Card */}
       <Card>
         <CardContent>
-          <h3 className="text-lg font-semibold mb-2">
-            Search results for "{query}"
-          </h3>
+          <h3 className="text-lg font-semibold mb-2">Search results for "{query}"</h3>
           <ul className="space-y-2">
             {(showAll ? wideSearchResults : wideSearchResults.slice(0, 10)).map((m) => (
               <Link to={`/members/${m.username}`} className="flex items-center gap-2 w-full">
                 <li key={m._id} className="flex items-center gap-3">
                   <img
-                    src={m.photo?.url || 'https://ik.imagekit.io/LHR/user-octagon-svgrepo-com.svg'}
+                    src={`${
+                      m.photo?.url || 'https://ik.imagekit.io/LHR/user-octagon-svgrepo-com.svg'
+                    }?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                     alt={m.username}
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div>
                     <p className="font-medium">{m.username}</p>
-                    <p className="text-sm text-gray-500">{m.firstName} {m.lastName}</p>
+                    <p className="text-sm text-gray-500">
+                      {m.firstName} {m.lastName}
+                    </p>
                   </div>
                 </li>
               </Link>

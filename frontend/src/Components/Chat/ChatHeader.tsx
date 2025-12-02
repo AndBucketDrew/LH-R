@@ -17,7 +17,7 @@ const ChatHeader = () => {
               className="font-semibold text-foreground text-sm"
             >
               <img
-                src={selectedUser?.photo?.url || '/default-avatar.png'}
+                src={`${selectedUser?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                 alt={selectedUser?.firstName || 'User'}
                 className="w-full h-full object-cover"
               />

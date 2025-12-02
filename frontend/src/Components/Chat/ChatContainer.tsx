@@ -71,7 +71,7 @@ const ChatContainer = () => {
               >
                 {!isMine && (
                   <img
-                    src={selectedUser?.photo?.url}
+                    src={`${selectedUser?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                     alt="profile"
                     className="w-8 h-8 rounded-full border object-cover mr-2 self-end"
                   />
@@ -102,7 +102,7 @@ const ChatContainer = () => {
                 </div>
                 {isMine && (
                   <img
-                    src={loggedInMember?.photo?.url}
+                    src={`${loggedInMember?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                     alt="me"
                     className="w-8 h-8 rounded-full border object-cover ml-2 self-end"
                   />

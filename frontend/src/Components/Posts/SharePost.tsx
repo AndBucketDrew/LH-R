@@ -115,7 +115,7 @@ export default function SharePost({ isOpen, onClose }: { isOpen: boolean; onClos
                     <div className="relative z-10 flex flex-col items-center justify-center flex-1">
                       <div className="relative mb-2">
                         <img
-                          src={friend?.photo?.url}
+                          src={`${friend?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                           alt={`${friend.firstName} ${friend.lastName}`}
                           className="w-14 h-14 rounded-full object-cover border-2 border-background shadow-md group-hover:scale-105 transition-transform duration-300"
                         />

@@ -382,53 +382,74 @@ const filterMember = async (req, res, next) => {
 
 const updateMember = async (req, res, next) => {
   try {
-    // Sicherheitsprüfung: Member kann sich nur selbst wollen
     const { id } = req.params;
 
-    // Feldprüfungen Ergebnis checken
     const result = validationResult(req);
-
-    if (result.errors.length > 0) {
-      throw new HttpError(JSON.stringify(result.errors), 422);
+    if (!result.isEmpty()) {
+      const errors = result.array();
+      console.warn('Validation failed for updateMember:', errors);
+      return res.status(422).json({ message: 'Validation failed', errors });
     }
 
-    const data = matchedData(req);
+    const data = matchedData(req, { locations: ['body'] });
 
-    // gibt es den Member überhaupt? Wenn nein, Abbruch
     const foundMember = await Member.findById(id);
-
     if (!foundMember) {
-      throw new HttpError('Member cannot be found', 404);
+      return res.status(404).json({ message: 'Member not found' });
     }
 
-    // Es werden nur die Felder geändert, die über die Schnittstelle kommen
     Object.assign(foundMember, data);
 
-    // wenn ein Bild kommt:
     if (req.file) {
-      // Neues Bild in ImageKit speichern
-      const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname);
+      try {
+        let fileBuffer = null;
+        let originalName = req.file.originalname || `upload-${Date.now()}`;
 
-      // ImageKit Bild löschen (using fileId instead of cloudinaryPublicId)
-      if (foundMember.photo && foundMember.photo.fileId) {
-        await deleteFileInImageKit(foundMember.photo.fileId); // Replace with your ImageKit delete function
+        if (req.file.buffer) {
+          fileBuffer = req.file.buffer;
+        } else if (req.file.path) {
+          const filePath = req.file.path;
+          fileBuffer = await fs.readFile(filePath);
+        } else {
+          throw new Error('Uploaded file missing buffer and path');
+        }
+
+        const uploadResponse = await uploadImage(fileBuffer, originalName);
+
+        if (!uploadResponse || !uploadResponse.fileId || !uploadResponse.url) {
+          throw new Error('Image upload returned unexpected response');
+        }
+
+        if (foundMember.photo && foundMember.photo.fileId) {
+          try {
+            await deleteFileInImageKit(foundMember.photo.fileId);
+          } catch (delErr) {
+            console.warn('Failed to delete old image in ImageKit', delErr);
+          }
+        }
+
+        const photo = {
+          fileId: uploadResponse.fileId,
+          url: uploadResponse.url,
+        };
+
+        foundMember.photo = photo;
+      } catch (fileErr) {
+        console.error('File handling/upload error in updateMember:', fileErr);
+        return res
+          .status(500)
+          .json({ message: 'Failed to process uploaded image', error: fileErr.message });
       }
-
-      const photo = {
-        fileId: uploadResponse.fileId,
-        url: uploadResponse.url,
-      };
-
-      foundMember.photo = photo;
     }
 
-    // Member speichern
     const updatedMember = await foundMember.save();
 
-    // geänderten Daten rausschicken
-    res.json(updatedMember);
-  } catch (error) {
-    return next(new HttpError(error, error.errorCode || 500));
+    const safeMember = updatedMember.toObject();
+    delete safeMember.password; // just in case
+    res.json(safeMember);
+  } catch (err) {
+    console.error('Unexpected error in updateMember:', err);
+    return res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
   }
 };
 

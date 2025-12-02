@@ -110,7 +110,7 @@ const SidebarFriendRecommendations = ({ onAddFriend }: SidebarFriendRecommendati
           >
             <a href={`/members/${user.username}`}>
               <img
-                src={user.photo?.url || '/default-avatar.png'}
+                src={`${user.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                 alt={user.username}
                 className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
               />

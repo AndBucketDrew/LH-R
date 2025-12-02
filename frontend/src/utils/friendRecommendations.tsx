@@ -166,7 +166,9 @@ const FriendRecommendations = ({ onAddFriend }: FriendRecommendationsProps) => {
                   <div className="flex-1 flex flex-col items-center space-y-2 mb-4">
                     <Link to={`/members/${user.username}`}>
                       <img
-                        src={user.photo?.url || '/default-avatar.png'}
+                        src={`${
+                          user.photo?.url || '/default-avatar.png'
+                        }?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
                         alt={user.username}
                         className="w-16 h-16 rounded-full object-cover hover:opacity-80 transition-opacity shadow-md"
                       />

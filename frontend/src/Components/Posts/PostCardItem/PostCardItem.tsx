@@ -57,7 +57,7 @@ const PostCardItem = ({
   // Detect if caption contains code - NOW WITH SEGMENTS (using decoded caption)
   const { isCode, segments } = useCodeDetection(decodedCaption, {
     minMatches: 2,
-    minLength: 10
+    minLength: 10,
   });
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -97,7 +97,10 @@ const PostCardItem = ({
           {segments.map((segment, index) => {
             if (segment.type === 'code' && segment.content.trim()) {
               return (
-                <div key={index} className="relative bg-slate-950 border-2 border-blue-500/30 rounded-lg p-4 shadow-lg">
+                <div
+                  key={index}
+                  className="relative bg-slate-950 border-2 border-blue-500/30 rounded-lg p-4 shadow-lg"
+                >
                   {index === 0 && (
                     <div className="absolute top-2 right-2 flex items-center gap-2 z-0">
                       <button
@@ -123,7 +126,10 @@ const PostCardItem = ({
               );
             } else if (segment.content.trim()) {
               return (
-                <p key={index} className="text-foreground text-left text-sm leading-relaxed whitespace-pre-wrap break-words">
+                <p
+                  key={index}
+                  className="text-foreground text-left text-sm leading-relaxed whitespace-pre-wrap break-words"
+                >
                   {segment.content}
                 </p>
               );
@@ -174,13 +180,15 @@ const PostCardItem = ({
 
   return (
     <div
-      className={`bg-card dark:bg-card shadow-lg rounded-lg border border-border overflow-hidden ${clickable ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''}`}
+      className={`bg-card dark:bg-card shadow-lg rounded-lg border border-border overflow-hidden ${
+        clickable ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''
+      }`}
       onClick={handleCardClick}
     >
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center">
           <img
-            src={post.author?.photo?.url || '/default-avatar.png'}
+            src={`${post?.author?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
             alt="Author"
             className="w-8 h-8 rounded-full mr-2 object-cover"
           />
@@ -260,21 +268,15 @@ const PostCardItem = ({
               >
                 {post.author?.username || 'Unknown'}
               </Link>
-              <div className="flex-1">
-                {renderCaption()}
-              </div>
+              <div className="flex-1">{renderCaption()}</div>
             </div>
           </div>
-
-
         </>
       )}
 
       {isTextOnly && (
         <>
-          <div className="px-3 py-4">
-            {renderCaption()}
-          </div>
+          <div className="px-3 py-4">{renderCaption()}</div>
 
           <div className={`px-3 py-2 border-t border-border`}>
             <div className="flex items-center space-x-4">

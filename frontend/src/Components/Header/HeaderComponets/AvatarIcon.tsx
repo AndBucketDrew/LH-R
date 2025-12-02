@@ -6,9 +6,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuGroup,
-  Avatar, 
-  AvatarFallback, 
-  AvatarImage
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
 } from '@/Components/ui';
 import useStore from '@/hooks/useStore';
 import { Link } from 'react-router-dom';
@@ -25,7 +25,7 @@ export default function AvatarIcon() {
           <div className="absolute inset-0 flex items-center justify-center">
             <AvatarImage
               className="w-12 h-12 rounded-full object-cover border-background" // Changed from w-14 h-14 to w-12 h-12
-              src={loggedInMember?.photo?.url}
+              src={`${loggedInMember?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
               alt="@shadcn"
             />
             <AvatarFallback className="w-12 h-12 text-xl">

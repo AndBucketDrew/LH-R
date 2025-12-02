@@ -31,26 +31,15 @@ import {
 } from '@/Components/ui';
 
 // ------------------------------
-// OWN Edit Profile Schema
+// OWN Edit Profile Schema (Password fields removed)
 // ------------------------------
-const EditProfileSchema = z
-  .object({
-    firstName: z.string().min(1, 'First name is required'),
-    lastName: z.string().min(1, 'Last name is required'),
-    username: z.string().min(1, 'Username is required'),
-    email: z.string().email('Invalid email'),
-    password: z.string().optional(),
-    confirmPassword: z.string().optional(),
-    photo: z.any().optional(),
-  })
-  .refine(
-    (data) =>
-      data.password && data.confirmPassword ? data.password === data.confirmPassword : true,
-    {
-      path: ['confirmPassword'],
-      message: 'Passwords must match',
-    }
-  );
+const EditProfileSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  username: z.string().min(1, 'Username is required'),
+  email: z.string().email('Invalid email'),
+  photo: z.any().optional(),
+});
 
 type EditProfileData = z.infer<typeof EditProfileSchema>;
 
@@ -58,6 +47,10 @@ const EditProfile = () => {
   const { loggedInMember, isUpdatingProfile, editProfile, deleteMember } = useStore();
   const [showDelete, setShowDelete] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const imageSrc = previewImage
+    ? previewImage
+    : `${loggedInMember?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-10,q-95,f-auto}`;
 
   // ------------------------------
   // react-hook-form
@@ -69,8 +62,6 @@ const EditProfile = () => {
       lastName: loggedInMember?.lastName || '',
       username: loggedInMember?.username || '',
       email: loggedInMember?.email || '',
-      password: '',
-      confirmPassword: '',
       photo: null,
     },
   });
@@ -86,29 +77,68 @@ const EditProfile = () => {
     setValue('email', loggedInMember.email || '');
   }, [loggedInMember, setValue]);
 
-  // Handle photo
+  // Handle photo with file size validation
   const handlePhotoChange = (e: any) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Check file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error(
+        `File is too large! Maximum size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(
+          2
+        )}MB`
+      );
+      // Clear the file input
+      e.target.value = '';
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file (JPEG, PNG, GIF, etc.)');
+      e.target.value = '';
+      return;
+    }
 
     setValue('photo', file);
 
     const reader = new FileReader();
     reader.onload = () => setPreviewImage(reader.result as string);
+    reader.onerror = () => {
+      toast.error('Failed to read the image file');
+    };
     reader.readAsDataURL(file);
   };
 
-  // Submit
+  // Submit - Only send fields that should be updated
   const onSubmit = form.handleSubmit(async (values) => {
     const formData = new FormData();
-    Object.entries(values).forEach(([k, v]) => {
-      if (v) formData.append(k, v as any);
-    });
+
+    // Append text fields
+    if (values.firstName) formData.append('firstName', values.firstName);
+    if (values.lastName) formData.append('lastName', values.lastName);
+    if (values.username) formData.append('username', values.username);
+    if (values.email) formData.append('email', values.email);
+
+    // Append photo only if a new one was selected
+    if (values.photo && values.photo instanceof File) {
+      formData.append('photo', values.photo);
+    }
+
+    // Debug: Log what we're sending
+    console.log('FormData entries being sent:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, typeof value === 'string' ? value : 'File');
+    }
 
     const response = await editProfile(formData);
 
     if (response) {
       toast.success('Profile edited successfully!');
+      // Reset preview after successful upload
+      setPreviewImage(null);
     } else {
       toast.error('Error while editing!');
     }
@@ -139,7 +169,7 @@ const EditProfile = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={previewImage || loggedInMember?.photo?.url}
+                src={imageSrc}
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4"
               />
@@ -167,7 +197,9 @@ const EditProfile = () => {
             </div>
 
             <p className="text-sm text-zinc-400">
-              {isUpdatingProfile ? 'Uploading...' : 'Click the camera icon to update your photo'}
+              {isUpdatingProfile
+                ? 'Uploading...'
+                : 'Click the camera icon to update your photo (Max 5MB)'}
             </p>
           </div>
 
