@@ -317,13 +317,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       const memberId = get().loggedInMember?._id;
       if (!memberId) throw new Error('No logged in member found');
 
-      if (data instanceof FormData) {
-        console.log('FormData entries:');
-        for (let [key, value] of data.entries()) {
-          console.log(key, typeof value === 'string' ? value : 'File');
-        }
-      }
-
       await fetchAPI({
         method: 'patch',
         url: `members/${memberId}`,

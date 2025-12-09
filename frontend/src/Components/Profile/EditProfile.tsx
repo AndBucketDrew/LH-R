@@ -83,7 +83,7 @@ const EditProfile = () => {
     if (!file) return;
 
     // Check file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error(
         `File is too large! Maximum size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(
@@ -125,12 +125,6 @@ const EditProfile = () => {
     // Append photo only if a new one was selected
     if (values.photo && values.photo instanceof File) {
       formData.append('photo', values.photo);
-    }
-
-    // Debug: Log what we're sending
-    console.log('FormData entries being sent:');
-    for (let [key, value] of formData.entries()) {
-      console.log(key, typeof value === 'string' ? value : 'File');
     }
 
     const response = await editProfile(formData);
@@ -359,3 +353,9 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+
+// sarahk
+// emmanovak
+// filipfilip
+// andi_m
+// olisteiner

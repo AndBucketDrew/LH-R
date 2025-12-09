@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import Logo from '@/assets/react.svg';
 
 //Hooks
 import { useStore } from '@/hooks';
@@ -73,6 +74,20 @@ export function LoginForm() {
       {/* Background dark horizontal box */}
       <div className="background-box bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-between px-12 overflow-hidden">
         <div className="max-w-md">
+          <div className="flex justify-center mb-6">
+            <div className="font-poppins flex items-center gap-2">
+              {/* Logo with Link */}
+              <div className="flex justify-center items-center">
+                <img src={Logo} alt="Logo" className="h-6 w-6" />
+              </div>
+              {/* Container for the name */}
+              <div className="flex gap-1 items-center text-xl">
+                <span>
+                  Dev<strong>Link</strong>
+                </span>
+              </div>
+            </div>
+          </div>
           <h2 className="text-2xl font-semibold mb-3">Don’t have an account?</h2>
           <p className="text-sm mb-8 leading-relaxed">
             Banjo tote bag bicycle rights, High Life sartorial cray craft beer whatever street art

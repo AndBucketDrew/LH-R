@@ -6,8 +6,9 @@ export interface IMember {
   lastName: string;
   photo?: Photo;
 
-  adress?: {
+  location?: {
     city: string;
+    country: string;
   };
   createdAt: string;
 }

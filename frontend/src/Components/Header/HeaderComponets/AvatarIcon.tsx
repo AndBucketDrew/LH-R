@@ -43,33 +43,43 @@ export default function AvatarIcon() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <Link to="/login">
-                <DropdownMenuItem>Login</DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-[#3a3b3c5f]">Login</DropdownMenuItem>
               </Link>
               <Link to="/signup">
-                <DropdownMenuItem>Signup</DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-[#3a3b3c5f]">Signup</DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
           </>
         )}
         {loggedInMember && (
           <>
-            <DropdownMenuLabel>
+            <DropdownMenuLabel className="text-center">
               <strong>My Account</strong>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link to="/profile">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+              <Link to={`/members/${loggedInMember?.username}`}>
+                <DropdownMenuItem className="hover:bg-[#3a3b3c5f]">Profile</DropdownMenuItem>
               </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-center">
+                <strong>Settings</strong>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
               <Link to="/change-password">
-                <DropdownMenuItem>Change Password</DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-[#3a3b3c5f]">
+                  Change Password
+                </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <Link to="/edit-profile">
+                <DropdownMenuItem className="hover:bg-[#3a3b3c5f]">Edit Profile</DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <Link to="/login">
                 <DropdownMenuItem
+                  className="hover:bg-[#bd5b5b]"
                   onClick={() => {
                     memberLogout();
                   }}
