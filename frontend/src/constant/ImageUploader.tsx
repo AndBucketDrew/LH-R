@@ -1,14 +1,19 @@
 import { Label } from '../Components/ui';
 import { useState, useEffect, useRef } from 'react';
 
-const ImageUploader = (props) => {
-  const { handleFormChange, photo } = props;
-  const [previewUrl, setPreviewUrl] = useState(null);
+interface ImageUploaderProps {
+  handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  photo: File | null;
+}
+
+const ImageUploader: React.FC<ImageUploaderProps> = ({ handleFormChange, photo }) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState({
     width: '100%',
     height: '16rem',
   });
-  const refPhoto = useRef(null);
+
+  const refPhoto = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!photo) {
@@ -19,9 +24,18 @@ const ImageUploader = (props) => {
 
     const filereader = new FileReader();
     filereader.onload = () => {
-      setPreviewUrl(filereader.result);
+      const result = filereader.result;
+
+      // Convert ArrayBuffer to string OR fallback to null
+      const url = typeof result === 'string' ? result : null;
+
+      setPreviewUrl(url);
+
+      if (!url) return;
+
       const img = new Image();
-      img.src = filereader.result;
+      img.src = url;
+
       img.onload = () => {
         const aspectRatio = img.width / img.height;
         const maxWidth = 384;
@@ -44,11 +58,12 @@ const ImageUploader = (props) => {
         });
       };
     };
+
     filereader.readAsDataURL(photo);
   }, [photo]);
 
   const handlePhotoUpload = () => {
-    refPhoto.current.click();
+    refPhoto.current?.click();
   };
 
   return (
@@ -61,17 +76,14 @@ const ImageUploader = (props) => {
         accept="image/*"
         className="hidden"
       />
+
       <div
         onClick={handlePhotoUpload}
         className="relative w-full max-w-xs border-2 border-dashed border-border/50 bg-background/50 rounded-xl flex items-center justify-center cursor-pointer hover:bg-accent/10 hover:border-accent/50 transition-all duration-200 shadow-sm hover:shadow-md"
         style={{ width: imageDimensions.width, height: imageDimensions.height }}
       >
         {previewUrl ? (
-          <img
-            src={previewUrl}
-            alt="Vorschau-Photo des neuen Mitglieds"
-            className="w-full h-full object-cover rounded-lg"
-          />
+          <img src={previewUrl} alt="Preview" className="w-full h-full object-cover rounded-lg" />
         ) : (
           <div className="flex flex-col items-center justify-center text-muted-foreground">
             <svg

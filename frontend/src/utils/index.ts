@@ -6,7 +6,7 @@ const fetchAPI = (options = {}) => {
     timeout: 10000,
     data: null,
     url: '/',
-    baseURL: 'http://localhost:8000/',
+    baseURL: 'https://devlink-backend-ra01.onrender.com/',
   };
 
   const axiosConfig = {

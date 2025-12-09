@@ -4,45 +4,56 @@ import { X, Image, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 const MessageInput = () => {
-  const [text, setText] = useState('');
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useRef(null);
+  const [text, setText] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const { sendMessage } = useStore();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     if (!file.type.startsWith('image/')) {
       toast.error('Please select an image file');
       return;
     }
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
+    reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
   };
 
   const removeImage = () => {
     setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  const handleSendMessage = async (e) => {
+  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!text.trim() && !fileInputRef.current.files[0]) return;
+
+    const file = fileInputRef.current?.files?.[0];
+
+    if (!text.trim() && !file) return;
 
     const formData = new FormData();
     formData.append('text', text.trim());
-    if (fileInputRef.current.files[0]) {
-      formData.append('image', fileInputRef.current.files[0]); // <-- actual file
+
+    if (file) {
+      formData.append('image', file);
     }
 
     try {
-      await sendMessage(formData); // send FormData instead of JSON
+      sendMessage(formData); // send FormData to store
       setText('');
       setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
     }
@@ -54,7 +65,7 @@ const MessageInput = () => {
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
             <img
-              src={imagePreview}
+              src={typeof imagePreview === 'string' ? imagePreview : ''}
               alt="Preview"
               className="w-20 h-20 object-cover rounded-lg border border-border"
             />
@@ -70,14 +81,13 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        {/* Input Field */}
         <div className="flex-1 flex gap-2">
           <input
             type="text"
             className="w-full px-4 py-2 rounded-lg bg-base-200 border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition"
             placeholder="Type a message..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
           />
 
           <input
@@ -88,7 +98,6 @@ const MessageInput = () => {
             onChange={handleImageChange}
           />
 
-          {/* Image Button */}
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -102,7 +111,6 @@ const MessageInput = () => {
           </button>
         </div>
 
-        {/* Send Button */}
         <button
           type="submit"
           disabled={!text.trim() && !imagePreview}

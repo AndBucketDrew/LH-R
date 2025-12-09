@@ -17,7 +17,7 @@ const ChatContainer = () => {
     subscribeToMessages,
   } = useStore();
 
-  const messageEndRef = useRef(null);
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (_hasHydrated && selectedUser?._id && loggedInMember?._id) {

@@ -12,7 +12,7 @@ import useStore from '@/hooks/useStore';
 import { toast } from 'sonner';
 import { useState } from 'react';
 
-export default function SharePost({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function SharePost({ onClose }: { isOpen: boolean; onClose: () => void }) {
   const {
     setShowSharePost,
     memberRefreshMe,

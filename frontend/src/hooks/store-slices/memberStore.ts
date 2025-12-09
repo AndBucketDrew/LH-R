@@ -15,7 +15,7 @@ import type { StateCreator } from 'zustand';
 import type { StoreState } from '../useStore.ts';
 import { io } from 'socket.io-client';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://devlink-backend-ra01.onrender.com';
 // Interfaces /////////////////////////////////////////
 export interface MemberStore {
   member: IMember;

@@ -108,7 +108,7 @@ export const createFriendsSlice: StateCreator<StoreState, [], [], FriendsStore> 
         set({ friendsError: 'Not logged in!' });
       }
 
-      const response: ApiResponse<IMember[]> = await fetchAPI({
+      await fetchAPI({
         url: `friends/deleteFriend/${friend}`,
         method: 'delete',
         headers: { Authorization: `Bearer ${token}` },

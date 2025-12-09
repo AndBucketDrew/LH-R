@@ -18,7 +18,7 @@ export interface MessagesStore {
   unsubscribeFromMessages: () => void;
   setSelectedUser: (userId: IMember | null) => void;
   getMessages: (userId: string | null) => Promise<void>;
-  sendMessage: (messageData: IMessage | null) => void;
+  sendMessage: (messageData: IMessage | FormData | null) => void;
 }
 
 const initialState = {

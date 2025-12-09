@@ -1,6 +1,7 @@
 import type { IMember } from './member.model';
 
 export interface IMessage {
+  image: any;
   _id: string;
   senderId: string;
   recipientId: string;
