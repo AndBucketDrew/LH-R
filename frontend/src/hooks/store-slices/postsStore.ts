@@ -275,7 +275,7 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
     const { messages } = get();
     try {
       const token = localStorage.getItem('lh_token');
-      const FRONTEND_URL = `http://localhost:5173`;
+      const FRONTEND_URL = `https://devlink-frontend-sglt.onrender.com`;
 
       const link = `${FRONTEND_URL}/posts/${postId}`;
 
