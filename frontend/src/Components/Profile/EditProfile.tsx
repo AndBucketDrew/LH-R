@@ -1,17 +1,14 @@
-//React
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-//Hooks
 import useStore from '@/hooks/useStore';
 
-//3rd lib
 import { Camera, Mail, User, AtSign } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-//UI
 import {
   Form,
   FormField,
@@ -30,20 +27,21 @@ import {
   DialogTitle,
 } from '@/Components/ui';
 
-const EditProfileSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  username: z.string().min(1, 'Username is required'),
-  email: z.string().email('Invalid email'),
-  photo: z.any().optional(),
-});
-
-type EditProfileData = z.infer<typeof EditProfileSchema>;
-
 const EditProfile = () => {
+  const { t } = useTranslation();
   const { loggedInMember, isUpdatingProfile, editProfile, deleteMember } = useStore();
   const [showDelete, setShowDelete] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const EditProfileSchema = z.object({
+    firstName: z.string().min(1, t('firstNameReq')),
+    lastName: z.string().min(1, t('lastNameReq')),
+    username: z.string().min(1, t('usernameReq')),
+    email: z.string().email(t('invalidEmail')),
+    photo: z.any().optional(),
+  });
+
+  type EditProfileData = z.infer<typeof EditProfileSchema>;
 
   const imageSrc = previewImage
     ? previewImage
@@ -74,22 +72,15 @@ const EditProfile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (5MB limit)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      toast.error(
-        `File is too large! Maximum size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(
-          2
-        )}MB`
-      );
-      // Clear the file input
+      toast.error(`${t('fileTooLarge')} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
       e.target.value = '';
       return;
     }
 
-    // Check file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file (JPEG, PNG, GIF, etc.)');
+      toast.error(t('selectImage'));
       e.target.value = '';
       return;
     }
@@ -99,16 +90,14 @@ const EditProfile = () => {
     const reader = new FileReader();
     reader.onload = () => setPreviewImage(reader.result as string);
     reader.onerror = () => {
-      toast.error('Failed to read the image file');
+      toast.error(t('readError'));
     };
     reader.readAsDataURL(file);
   };
 
-  // Submit - Only send fields that should be updated
   const onSubmit = form.handleSubmit(async (values) => {
     const formData = new FormData();
 
-    // Append text fields
     if (values.firstName) formData.append('firstName', values.firstName);
     if (values.lastName) formData.append('lastName', values.lastName);
     if (values.username) formData.append('username', values.username);
@@ -121,21 +110,20 @@ const EditProfile = () => {
     const response = await editProfile(formData);
 
     if (response) {
-      toast.success('Profile edited successfully!');
-
+      toast.success(t('editSuccess'));
       setPreviewImage(null);
     } else {
-      toast.error('Error while editing!');
+      toast.error(t('editError'));
     }
   });
 
   const handleConfirmDelete = async () => {
     try {
       await deleteMember(loggedInMember?._id);
-      toast.success('Profile deleted successfully! Logging out!');
+      toast.success(t('deleteSuccess'));
     } catch (err) {
-      console.error('Delete error (but proceeding with logout):', err);
-      toast.error('Profile deleted, but logout failed—please refresh.');
+      console.error('Delete error:', err);
+      toast.error(t('deleteError'));
     } finally {
       setShowDelete(false);
     }
@@ -146,11 +134,10 @@ const EditProfile = () => {
       <div className="max-w-2xl mx-auto p-4 py-8">
         <div className="bg-base-300 rounded-xl p-6 space-y-8">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold">Edit Profile</h1>
-            <p className="mt-2">Your profile information</p>
+            <h1 className="text-2xl font-semibold">{t('editProfile')}</h1>
+            <p className="mt-2">{t('profileInfo')}</p>
           </div>
 
-          {/* Avatar */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
@@ -182,104 +169,96 @@ const EditProfile = () => {
             </div>
 
             <p className="text-sm text-zinc-400">
-              {isUpdatingProfile
-                ? 'Uploading...'
-                : 'Click the camera icon to update your photo (Max 5MB)'}
+              {isUpdatingProfile ? t('uploading') : t('clickCamera')}
             </p>
           </div>
 
-          {/* Form */}
           <Form {...form}>
             <form className="space-y-6" onSubmit={onSubmit}>
-              {/* First Name */}
               <FormField
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <User className="w-4 h-4" /> First Name
+                      <User className="w-4 h-4" /> {t('firstName')}
                     </FormLabel>
                     <FormControl>
-                      <Input className="bg-base-200" placeholder="First Name" {...field} />
+                      <Input className="bg-base-200" placeholder={t('firstName')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Last Name */}
               <FormField
                 control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <User className="w-4 h-4" /> Last Name
+                      <User className="w-4 h-4" /> {t('lastName')}
                     </FormLabel>
                     <FormControl>
-                      <Input className="bg-base-200" placeholder="Last Name" {...field} />
+                      <Input className="bg-base-200" placeholder={t('lastName')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Username */}
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <AtSign className="w-4 h-4" /> Username
+                      <AtSign className="w-4 h-4" /> {t('username')}
                     </FormLabel>
                     <FormControl>
-                      <Input className="bg-base-200" placeholder="Username" {...field} />
+                      <Input className="bg-base-200" placeholder={t('username')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <Mail className="w-4 h-4" /> Email Address
+                      <Mail className="w-4 h-4" /> {t('emailAddress')}
                     </FormLabel>
                     <FormControl>
-                      <Input className="bg-base-200" placeholder="Email" {...field} />
+                      <Input className="bg-base-200" placeholder={t('emailAddress')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Save button */}
               <Button
                 type="submit"
                 disabled={isUpdatingProfile}
                 className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
               >
-                Save Changes
+                {t('saveChanges')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 bg-base-300 rounded-xl p-6">
-            <h2 className="text-lg font-medium mb-4">Account Information</h2>
+            <h2 className="text-lg font-medium mb-4">{t('accountInfo')}</h2>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between py-2 border-b border-zinc-700">
-                <span>Member Since</span>
+                <span>{t('memberSince')}</span>
                 <span>{loggedInMember?.createdAt?.split('T')[0]}</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span>Account Status</span>
-                <span className="text-green-500">Active</span>
+                <span>{t('accountStatus')}</span>
+                <span className="text-green-500">{t('statusActive')}</span>
               </div>
             </div>
           </div>
@@ -287,16 +266,9 @@ const EditProfile = () => {
           <button
             onClick={() => setShowDelete(true)}
             disabled={isUpdatingProfile}
-            className="w-full py-2 rounded-lg 
-               border border-red-700 
-               text-red-700 
-               bg-transparent
-               hover:bg-red-700
-               hover:border-red-700 
-               hover:text-white
-               disabled:opacity-50"
+            className="w-full py-2 rounded-lg border border-red-700 text-red-700 bg-transparent hover:bg-red-700 hover:text-white disabled:opacity-50"
           >
-            Delete Profile
+            {t('deleteProfile')}
           </button>
         </div>
       </div>
@@ -305,35 +277,26 @@ const EditProfile = () => {
         <Dialog open={showDelete} onOpenChange={setShowDelete}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Confirm Delete Profile</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete your profile? This action cannot be undone and will
-                remove all your posts, friends, and data.
-              </DialogDescription>
+              <DialogTitle>{t('confirmDelete')}</DialogTitle>
+              <DialogDescription>{t('deleteWarning')}</DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
-              <p className="text-sm text-destructive">Username: @{loggedInMember?.username}</p>
+              <p className="text-sm text-destructive">
+                {t('username')}: @{loggedInMember?.username}
+              </p>
             </div>
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline" onClick={() => setShowDelete(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
               </DialogClose>
               <Button
                 type="button"
-                className=" 
-               border border-red-700 
-               text-red-700 
-               bg-transparent
-               hover:bg-red-700
-               hover:border-red-700 
-               hover:text-white
-               disabled:opacity-50"
+                className="border border-red-700 text-red-700 bg-transparent hover:bg-red-700 hover:text-white"
                 onClick={handleConfirmDelete}
-                disabled={isUpdatingProfile}
               >
-                Delete Profile
+                {t('deleteProfile')}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -1,6 +1,7 @@
 //React
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 //Hooks n Models
 import useStore from '@/hooks/useStore';
@@ -10,6 +11,7 @@ export default function FriendsSidebar() {
   const { friends, friendsLoading, friendsError, fetchFriends, setSelectedUser } = useStore(
     (state) => state
   );
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchFriends();
@@ -22,7 +24,7 @@ export default function FriendsSidebar() {
   if (friendsLoading) {
     return (
       <div className="flex items-center justify-center h-full border-l border-[--sidebar-border]">
-        <div className="text-center font-poppins text-[--muted-foreground]">Loading...</div>
+        <div className="text-center font-poppins text-[--muted-foreground]">{t('Loading...')}</div>
       </div>
     );
   }
@@ -39,7 +41,7 @@ export default function FriendsSidebar() {
     <div className="flex flex-col h-full w-fit border-l border-[--sidebar-border] bg-[--background] fixed">
       <div className="p-4 border-b border-[--sidebar-border]">
         <h3 className="text-pretty font-poppins text-[--muted-foreground] tracking-wide">
-          Chat with friends
+          {t('ChatWithFriends')}
         </h3>
       </div>
       {friends.length === 0 ? (

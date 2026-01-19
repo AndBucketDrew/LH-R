@@ -7,13 +7,20 @@ import useStore from '@/hooks/useStore';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { HouseIcon, CameraPlusIcon, ChatsCircleIcon } from '@phosphor-icons/react';
 import Notifications from './HeaderComponets/Notifications';
+import { useTranslation } from 'react-i18next';
 
 export default function Navbar() {
   const { setShowAddPost, loggedInMember, fetchFriendsPosts } = useStore((state) => state);
   const location = useLocation();
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
 
   const isResultsPage = location.pathname.startsWith('/results');
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'de' : 'en';
+    i18n.changeLanguage(newLang);
+  };
 
   const handleHomeClick = () => {
     if (location.pathname === '/') {
@@ -30,7 +37,18 @@ export default function Navbar() {
     return (
       <div className="font-poppins fixed top-0 left-0 w-full p-4 flex justify-between items-center bg-white dark:bg-gray-900 shadow-md z-10">
         <AppNameAndLogo />
-        <ModeToggle />
+        <div className="flex items-center gap-5">
+          {/* Add the button here */}
+          <button
+            onClick={toggleLanguage}
+            className="group flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <span className="text-xs font-semibold">
+              {i18n.language.toUpperCase() === 'EN' ? 'DE' : 'EN'}
+            </span>
+          </button>
+          <ModeToggle />
+        </div>
       </div>
     );
   }
@@ -59,6 +77,15 @@ export default function Navbar() {
 
       {/* Right Section */}
       <div className="flex items-center gap-5">
+        <button
+          onClick={toggleLanguage}
+          className="group flex items-center gap-2 px-3 py-2.5 rounded-lg  hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <span className="text-xs font-semibold">
+            {i18n.language.toUpperCase() === 'EN' ? 'DE' : 'EN'}
+          </span>
+        </button>
+
         <Notifications />
         <ModeToggle />
         <AvatarIcon />

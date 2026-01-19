@@ -4,11 +4,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import useStore from '../../hooks/useStore.ts';
 import { Link } from 'react-router-dom';
 import { IoSearch } from 'react-icons/io5';
+import { useTranslation } from 'react-i18next';
 
 export function SearchResults() {
   const [searchParams] = useSearchParams();
   const queryParams = searchParams.get('query') || '';
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { friendsSearchResults, wideSearchResults, searchMembersFriends, searchMembersWide } =
     useStore((state) => state);
@@ -61,10 +63,9 @@ export function SearchResults() {
         <Card>
           <CardContent>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">Friends matching "{query}"</h3>
-              <Button size="sm" variant="outline" onClick={() => setShowFriends(false)}>
-                Hide Test Btn
-              </Button>
+              <h3 className="text-lg font-semibold">
+                {t('sbFriendsMatching')} "{query}"
+              </h3>
             </div>
             <ul className="space-y-2">
               {friendsSearchResults.map((friend) => (
@@ -98,7 +99,9 @@ export function SearchResults() {
       {/* Wide Search Card */}
       <Card>
         <CardContent>
-          <h3 className="text-lg font-semibold mb-2">Search results for "{query}"</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {t('sbSearchResults')} "{query}"
+          </h3>
           <ul className="space-y-2">
             {(showAll ? wideSearchResults : wideSearchResults.slice(0, 10)).map((m) => (
               <Link to={`/members/${m.username}`} className="flex items-center gap-2 w-full">

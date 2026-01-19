@@ -3,6 +3,7 @@ import SidebarFriendRecommendations from '@/utils/sidebarRecommendations';
 import { Newspaper, ExternalLink, Globe } from 'lucide-react';
 import fetchAPI from '@/utils';
 import type { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface RecommendationBarProps {
   onAddFriend: (friendId: string) => Promise<void>;
@@ -18,12 +19,13 @@ interface NewsItem {
 const RecommendationBar: FC<RecommendationBarProps> = ({ onAddFriend }) => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const response = await fetchAPI({ url: 'members/news', method: 'GET' });
-        setNews(response.data.slice(0, 6)); 
+        setNews(response.data.slice(0, 6));
       } catch (error) {
         console.error('Failed to fetch news:', error);
       } finally {
@@ -65,7 +67,7 @@ const RecommendationBar: FC<RecommendationBarProps> = ({ onAddFriend }) => {
             <div className="p-1.5 bg-primary/10 rounded-lg">
               <Newspaper className="w-4 h-4 text-primary" />
             </div>
-            <h3 className="font-bold text-foreground">Latest News</h3>
+            <h3 className="font-bold text-foreground">{t('LatestNews')}</h3>
           </div>
 
           <div className="px-4 pb-4 space-y-3">

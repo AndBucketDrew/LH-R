@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import FriendRecommendations from '@/utils/friendRecommendations';
 import PostCardItem from './PostCardItem/PostCardItem';
+import { useTranslation } from 'react-i18next';
 
 const PostFeed = () => {
   const {
@@ -18,6 +19,7 @@ const PostFeed = () => {
     addFriend,
   } = useStore((state) => state);
 
+  const { t } = useTranslation();
   const [displayedPosts, setDisplayedPosts] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -161,7 +163,7 @@ const PostFeed = () => {
   };
 
   if (loading && displayedPosts.length === 0) {
-    return <p className="text-center text-foreground">Loading...</p>;
+    return <p className="text-center text-foreground">{t('Loading...')}</p>;
   }
 
   if (error) return <p className="text-destructive text-center">An error has occurred: {error}</p>;
@@ -204,13 +206,13 @@ const PostFeed = () => {
       {hasMore && (
         <div ref={loaderRef} className="py-8 text-center text-muted-foreground">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="mt-2">Loading more posts...</p>
+          <p className="mt-2">{t('LoadingMorePosts')}</p>
         </div>
       )}
 
       {!hasMore && displayedPosts.length > 0 && (
         <div className="py-8 text-center text-muted-foreground">
-          <p>You've reached the end! 🎉</p>
+          <p>{t('feedEnd')}</p>
         </div>
       )}
     </div>

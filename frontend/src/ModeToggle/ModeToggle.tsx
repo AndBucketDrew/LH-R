@@ -4,9 +4,7 @@ import { Moon, Sun } from 'lucide-react';
 
 export function ModeToggle() {
   // Initialize theme from localStorage or default to 'light'
-  const [theme, setTheme] = React.useState(
-    () => localStorage.getItem('theme') || 'dark'
-  );
+  const [theme, setTheme] = React.useState(() => localStorage.getItem('theme') || 'dark');
 
   const toggleMode = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -21,7 +19,12 @@ export function ModeToggle() {
   }, [theme]);
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleMode}>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggleMode}
+      className="hover:bg-gray-100 dark:hover:bg-gray-800"
+    >
       {theme === 'light' ? (
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
       ) : (

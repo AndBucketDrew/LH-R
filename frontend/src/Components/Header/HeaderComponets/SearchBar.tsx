@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoSearch } from 'react-icons/io5';
+import { useTranslation } from 'react-i18next';
 
 //Hooks
 import { useStore } from '@/hooks';
@@ -27,6 +28,7 @@ export default function SearchBar({
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { searchMembersFriends, friendsSearchResults } = useStore((state) => state);
 
@@ -50,9 +52,7 @@ export default function SearchBar({
   }, [query, searchMembersFriends]);
 
   const handleSeeAll = () => {
-
     sessionStorage.setItem('searchQuery', query);
-
 
     navigate(`/results?query=${encodeURIComponent(query)}`);
     setShowDropdown(false);
@@ -75,7 +75,7 @@ export default function SearchBar({
       >
         <Input
           className="rounded-3xl h-10 pl-11 shadow-none w-full bg-transparent"
-          placeholder="Search..."
+          placeholder={t('phSearch')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => {

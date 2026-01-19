@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
 } from '@/Components/ui';
 import { useCodeDetection } from '@/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface PostCardProps {
   post: any;
@@ -53,6 +54,7 @@ const PostCardItem = ({
     return post.caption ? decodeHTMLEntities(post.caption) : '';
   }, [post.caption]);
 
+  const { t } = useTranslation();
 
   const { isCode, segments } = useCodeDetection(decodedCaption, {
     minMatches: 2,
@@ -325,7 +327,7 @@ const PostCardItem = ({
             </div>
           ))
         ) : (
-          <p className="text-sm text-muted-foreground">No comments yet.</p>
+          <p className="text-sm text-muted-foreground">{t('phNoCommentsYet')}</p>
         )}
       </div>
 
@@ -366,7 +368,7 @@ const PostCardItem = ({
                 handleCommentSubmit(e);
               }
             }}
-            placeholder="Add a comment..."
+            placeholder={t('phComment')}
             className="flex-1 bg-transparent border-none focus:ring-0 text-foreground text-sm placeholder-muted-foreground outline-none"
           />
           <button

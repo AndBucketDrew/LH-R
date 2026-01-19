@@ -1,15 +1,14 @@
-//React
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import Logo from '@/assets/react.svg';
+import { useTranslation } from 'react-i18next';
+import Logo from '@/assets/DevLinkLogo.png';
 
-//Hooks
+// Hooks
 import { useStore } from '@/hooks';
 import { useEnter } from '@/hooks';
 
-//3rd lib
+// 3rd lib
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
@@ -30,16 +29,17 @@ import {
   FormMessage,
 } from '@/Components/ui';
 
-const FormSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
-});
-
 export function LoginForm() {
+  const { t } = useTranslation();
   const { memberLogin } = useStore((state) => state);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const FormSchema = z.object({
+    username: z.string().min(1, t('usernameReq')),
+    password: z.string().min(1, t('passwordRequired')),
+  });
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -55,13 +55,11 @@ export function LoginForm() {
 
   const handleLogin = form.handleSubmit(async (values) => {
     setIsLoading(true);
-
     const result = await memberLogin(values);
-
     setIsLoading(false);
 
     if (result) {
-      toast.success('Logged in successfully! Enjoy!');
+      toast.success(t('loginSuccess'));
       navigate('/');
     } else {
       const { alert } = useStore.getState();
@@ -71,6 +69,7 @@ export function LoginForm() {
       });
     }
   });
+
   useEnter(handleLogin);
 
   return (
@@ -80,11 +79,9 @@ export function LoginForm() {
         <div className="max-w-md">
           <div className="flex justify-center mb-6">
             <div className="font-poppins flex items-center gap-2">
-              {/* Logo with Link */}
               <div className="flex justify-center items-center">
                 <img src={Logo} alt="Logo" className="h-6 w-6" />
               </div>
-              {/* Container for the name */}
               <div className="flex gap-1 items-center text-xl">
                 <span>
                   Dev<strong>Link</strong>
@@ -92,13 +89,13 @@ export function LoginForm() {
               </div>
             </div>
           </div>
-          <h2 className="text-2xl font-semibold mb-3">Don’t have an account?</h2>
+          <h2 className="text-2xl font-semibold mb-3">{t('dontHaveAccount')}</h2>
           <p className="text-sm mb-8 leading-relaxed">
             Banjo tote bag bicycle rights, High Life sartorial cray craft beer whatever street art
             fap.
           </p>
           <Button asChild variant="outline" className="px-6">
-            <Link to="/signup">Sign Up</Link>
+            <Link to="/signup">{t('signup')}</Link>
           </Button>
         </div>
       </div>
@@ -111,7 +108,7 @@ export function LoginForm() {
         )}
       >
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg tracking-wide">LOGIN</CardTitle>
+          <CardTitle className="text-lg tracking-wide">{t('loginTitle')}</CardTitle>
         </CardHeader>
 
         <CardContent>
@@ -124,7 +121,7 @@ export function LoginForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>{t('username')}</FormLabel>
                       <FormMessage className="text-xs">
                         <span>
                           {form.formState.errors.username?.message ||
@@ -134,12 +131,11 @@ export function LoginForm() {
                     </div>
                     <FormControl>
                       <Input
-                        placeholder="Enter your username"
-                        className={`${
-                          form.formState.errors.username || form.formState.errors.root
-                            ? 'border border-red-500 shake'
-                            : ''
-                        }`}
+                        placeholder={t('enterUsername')}
+                        className={clsx(
+                          (form.formState.errors.username || form.formState.errors.root) &&
+                            'border border-red-500 shake'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -154,10 +150,10 @@ export function LoginForm() {
                 render={({ field }) => (
                   <FormItem className="relative mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t('password')}</FormLabel>
                       <FormMessage className="text-xs">
                         <span>
-                          {form.formState.errors.username?.message ||
+                          {form.formState.errors.password?.message ||
                             form.formState.errors.root?.message}
                         </span>
                       </FormMessage>
@@ -166,12 +162,11 @@ export function LoginForm() {
                       <div className="relative">
                         <Input
                           type={showPassword ? 'text' : 'password'}
-                          placeholder="Enter your password"
-                          className={`${
-                            form.formState.errors.password || form.formState.errors.root
-                              ? 'border border-red-500 shake'
-                              : ''
-                          }`}
+                          placeholder={t('enterPassword')}
+                          className={clsx(
+                            (form.formState.errors.password || form.formState.errors.root) &&
+                              'border border-red-500 shake'
+                          )}
                           {...field}
                         />
                         <Button
@@ -195,12 +190,12 @@ export function LoginForm() {
 
               <div className="text-right text-sm">
                 <Link to="/reset-password" className="hover:text-red-400">
-                  Forgot password?
+                  {t('forgotPassword')}
                 </Link>
               </div>
 
               <Button type="submit" className="uppercase tracking-wide w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Log In'}
+                {isLoading ? t('loggingIn') : t('loginBtn')}
               </Button>
 
               <Button
@@ -208,7 +203,7 @@ export function LoginForm() {
                 variant="outline"
                 className="px-6 w-full hidden max-[1300px]:flex animate-dropIn"
               >
-                <Link to="/signup">Sign Up</Link>
+                <Link to="/signup">{t('signup')}</Link>
               </Button>
             </form>
           </Form>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import fetchAPI from '.';
+import { useTranslation } from 'react-i18next';
 
 interface RecommendedUser {
   _id: string;
@@ -25,6 +26,7 @@ const SidebarFriendRecommendations = ({ onAddFriend }: SidebarFriendRecommendati
   const [loading, setLoading] = useState(true);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
+  const { t } = useTranslation();
 
   const INITIAL_DISPLAY = 4;
 
@@ -96,7 +98,7 @@ const SidebarFriendRecommendations = ({ onAddFriend }: SidebarFriendRecommendati
     <div className="bg-card rounded-xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/20">
-        <h3 className="font-semibold text-foreground text-sm">Suggested friends</h3>
+        <h3 className="font-semibold text-foreground text-sm">{t('SuggestedFriends')}</h3>
       </div>
 
       {/* User List */}
@@ -155,7 +157,9 @@ const SidebarFriendRecommendations = ({ onAddFriend }: SidebarFriendRecommendati
             onClick={() => setShowAll(!showAll)}
             className="w-full text-primary text-sm font-medium hover:underline transition-colors"
           >
-            {showAll ? 'Show less' : `Show ${recommendations.length - INITIAL_DISPLAY} more`}
+            {showAll
+              ? t('showLess')
+              : t('showMore', { count: recommendations.length - INITIAL_DISPLAY })}
           </button>
         </div>
       )}

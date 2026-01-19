@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import fetchAPI from '.';
+import { useTranslation } from 'react-i18next';
 
 interface RecommendedUser {
   _id: string;
@@ -27,6 +28,7 @@ const FriendRecommendations = ({ onAddFriend }: FriendRecommendationsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
+  const { t } = useTranslation();
 
   const VISIBLE_CARDS = 3; // Number of cards visible at once
   const CARD_WIDTH = 164; // Fixed width for smooth animation
@@ -117,11 +119,8 @@ const FriendRecommendations = ({ onAddFriend }: FriendRecommendationsProps) => {
     <div className="bg-background rounded-2xl overflow-hidden border border-border/50">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/20">
-        <h3 className="font-semibold text-foreground">Suggested for you</h3>
+        <h3 className="font-semibold text-foreground">{t('SuggestedFriends')}</h3>
         <div className="flex items-center gap-2">
-          <Link to="/discover" className="text-primary text-sm hover:underline transition-colors">
-            See all
-          </Link>
           <button
             onClick={handleDismiss}
             className="text-muted-foreground hover:text-foreground transition-colors rounded-full p-1 hover:bg-muted/50"

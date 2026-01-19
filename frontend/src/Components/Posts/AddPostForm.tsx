@@ -1,4 +1,3 @@
-// Components/AddPostForm.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -6,6 +5,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useStore } from '@/hooks';
 import {
@@ -24,18 +24,19 @@ import {
   Button,
 } from '@/Components/ui';
 
-const AddPostSchema = z.object({
-  caption: z.string().min(1, 'Caption is required'),
-  photo: z.any().optional(),
-});
-
-type AddPostData = z.infer<typeof AddPostSchema>;
-
 export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const { uploadPost, setShowAddPost, memberRefreshMe } = useStore((state) => state);
   const navigate = useNavigate();
   const [isPosting, setIsPosting] = useState(false);
   const [captionText, setCaptionText] = useState('');
+
+  const AddPostSchema = z.object({
+    caption: z.string().min(1, t('captionRequired')),
+    photo: z.any().optional(),
+  });
+
+  type AddPostData = z.infer<typeof AddPostSchema>;
 
   const form = useForm<AddPostData>({
     resolver: zodResolver(AddPostSchema),
@@ -60,15 +61,15 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
         navigate('/');
         setShowAddPost(false);
         memberRefreshMe();
-        toast.success('Successfully posted!');
+        toast.success(t('postSuccess'));
         form.reset();
         setCaptionText('');
       } else {
-        toast.error('Error while posting!');
+        toast.error(t('postError'));
       }
     } catch (error) {
       console.error('Error posting:', error);
-      toast.error('Error while posting!');
+      toast.error(t('postError'));
     } finally {
       setIsPosting(false);
     }
@@ -114,9 +115,9 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col bg-card/80 backdrop-blur-sm border-border/50 shadow-2xl rounded-2xl p-0 overflow-hidden">
         <DialogHeader className="border-b border-border/20 pb-4 px-6 pt-6">
-          <DialogTitle className="text-2xl font-semibold">Create Post</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold">{t('createPost')}</DialogTitle>
           <DialogDescription className="text-muted-foreground text-sm mt-1">
-            Share your moment with the community
+            {t('shareMoment')}
           </DialogDescription>
         </DialogHeader>
 
@@ -124,7 +125,6 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
           <form onSubmit={handlePosting} className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 flex overflow-hidden">
               <div className="flex flex-col overflow-y-auto px-6 py-4 space-y-4 w-full">
-                {/* Caption */}
                 <FormField
                   control={form.control}
                   name="caption"
@@ -133,7 +133,7 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
                       <FormControl>
                         <Textarea
                           id="caption"
-                          placeholder="What's on your mind?"
+                          placeholder={t('phMind')}
                           disabled={isPosting}
                           value={captionText}
                           onChange={handleCaptionChange}
@@ -150,7 +150,6 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
                   )}
                 />
 
-                {/* Image Uploader */}
                 <FormField
                   control={form.control}
                   name="photo"
@@ -181,10 +180,10 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
                             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border/50 rounded-lg cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all">
                               <Image className="w-8 h-8 text-muted-foreground mb-2" />
                               <span className="text-xs text-muted-foreground">
-                                Click to upload image
+                                {t('clickUpload')}
                               </span>
                               <span className="text-xs text-muted-foreground/60 mt-1">
-                                (optional)
+                                {t('optional')}
                               </span>
                               <input
                                 type="file"
@@ -210,14 +209,14 @@ export default function AddPostForm({ isOpen, onClose }: { isOpen: boolean; onCl
                 disabled={isPosting}
                 className="px-4 py-2 bg-background hover:bg-background/80 text-foreground border border-border/50 rounded-lg transition-all"
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={isPosting || !captionText.trim()}
                 className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-primary/20 transition-all duration-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isPosting ? 'Posting...' : 'Post!'}
+                {isPosting ? t('posting') : t('postBtn')}
               </Button>
             </DialogFooter>
           </form>

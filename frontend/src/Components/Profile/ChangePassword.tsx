@@ -1,18 +1,15 @@
-//React
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyRound, Lock, EyeIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-//Hooks
 import { useStore } from '@/hooks';
 import { useEnter } from '@/hooks';
 
-//3rd lib
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-//Components
 import {
   Form,
   FormField,
@@ -26,28 +23,26 @@ import {
 
 import type { PasswordData } from '@/models/member.model';
 
-const ChangePasswordSchema = z
-  .object({
-    oldPassword: z.string().min(1, 'Old password is required'),
-    newPassword: z
-      .string()
-      .min(6, 'New password must be at least 6 characters')
-      .min(1, 'New password is required'),
-    confirmPassword: z.string().min(1, 'Please confirm your new password'),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type ChangePasswordData = z.infer<typeof ChangePasswordSchema>;
-
 const ChangePassword = () => {
+  const { t } = useTranslation();
   const { loggedInMember, isUpdatingProfile, memberChangePassword, memberLogout } = useStore();
 
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const ChangePasswordSchema = z
+    .object({
+      oldPassword: z.string().min(1, t('oldPasswordRequired')),
+      newPassword: z.string().min(6, t('newPasswordMin')).min(1, t('newPasswordRequired')),
+      confirmPassword: z.string().min(1, t('confirmPasswordRequired')),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t('passwordsMatchError'),
+      path: ['confirmPassword'],
+    });
+
+  type ChangePasswordData = z.infer<typeof ChangePasswordSchema>;
 
   const toggleOldPasswordVisibility = () => setShowOldPassword((prev) => !prev);
   const toggleNewPasswordVisibility = () => setShowNewPassword((prev) => !prev);
@@ -75,27 +70,26 @@ const ChangePassword = () => {
       const response = await memberChangePassword(passwordData);
 
       if (response) {
-        toast.success('Password changed successfully! Logging out...');
+        toast.success(t('passwordChangeSuccess'));
         setTimeout(() => {
           memberLogout();
         }, 1000);
       } else {
-        toast.error('Error while changing password!');
+        toast.error(t('passwordChangeError'));
       }
     } catch (error) {
       const { alert } = useStore.getState();
-      console.log('alert is ', alert);
       const msg = alert?.description?.toLowerCase();
 
       if (msg?.includes('old password')) {
         setError('oldPassword', {
           type: 'manual',
-          message: alert?.description || 'Invalid old password',
+          message: alert?.description || t('oldPasswordRequired'),
         });
       } else {
         setError('root', {
           type: 'manual',
-          message: alert?.description || 'Failed to change password',
+          message: alert?.description || t('passwordChangeError'),
         });
       }
     }
@@ -107,10 +101,9 @@ const ChangePassword = () => {
     <div className="max-w-2xl mx-auto p-4 py-8">
       <div className="bg-base-300 rounded-xl p-6 space-y-8">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold">Change Password</h1>
+          <h1 className="text-2xl font-semibold">{t('changePassword')}</h1>
         </div>
 
-        {/* Avatar display section */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
             <img
@@ -123,7 +116,6 @@ const ChangePassword = () => {
 
         <Form {...form}>
           <form onSubmit={handleChangePassword} className="space-y-6">
-            {/* Old Password */}
             <FormField
               control={form.control}
               name="oldPassword"
@@ -131,13 +123,13 @@ const ChangePassword = () => {
                 <FormItem>
                   <FormLabel className="text-sm text-zinc-400 flex items-center gap-2">
                     <Lock className="w-4 h-4" />
-                    Old Password
+                    {t('oldPassword')}
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showOldPassword ? 'text' : 'password'}
-                        placeholder="Old Password"
+                        placeholder={t('oldPassword')}
                         className={`px-4 py-2.5 bg-base-200 rounded-lg border w-full placeholder-zinc-700 pr-10 ${
                           form.formState.errors.oldPassword ? 'border-red-500 shake' : ''
                         }`}
@@ -157,7 +149,6 @@ const ChangePassword = () => {
               )}
             />
 
-            {/* New Password */}
             <FormField
               control={form.control}
               name="newPassword"
@@ -165,13 +156,13 @@ const ChangePassword = () => {
                 <FormItem>
                   <FormLabel className="text-sm text-zinc-400 flex items-center gap-2">
                     <KeyRound className="w-4 h-4" />
-                    New Password
+                    {t('newPassword')}
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showNewPassword ? 'text' : 'password'}
-                        placeholder="New Password"
+                        placeholder={t('newPassword')}
                         className={`px-4 py-2.5 bg-base-200 rounded-lg border w-full placeholder-zinc-700 pr-10 ${
                           form.formState.errors.newPassword ? 'border-red-500 shake' : ''
                         }`}
@@ -191,7 +182,6 @@ const ChangePassword = () => {
               )}
             />
 
-            {/* Confirm Password */}
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -199,13 +189,13 @@ const ChangePassword = () => {
                 <FormItem>
                   <FormLabel className="text-sm text-zinc-400 flex items-center gap-2">
                     <KeyRound className="w-4 h-4" />
-                    Confirm Password
+                    {t('confirmPassword')}
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showConfirmPassword ? 'text' : 'password'}
-                        placeholder="Confirm Password"
+                        placeholder={t('confirmPassword')}
                         className={`px-4 py-2.5 bg-base-200 rounded-lg border w-full placeholder-zinc-700 pr-10 ${
                           form.formState.errors.confirmPassword ? 'border-red-500 shake' : ''
                         }`}
@@ -225,21 +215,20 @@ const ChangePassword = () => {
               )}
             />
 
-            {/* Root error message */}
             {form.formState.errors.root && (
               <p className="text-xs text-red-500">{form.formState.errors.root.message}</p>
             )}
 
             <div className="mt-6 bg-base-300 rounded-xl p-6">
-              <h2 className="text-lg font-medium mb-4">Account Information</h2>
+              <h2 className="text-lg font-medium mb-4">{t('accountInfo')}</h2>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between py-2 border-b border-zinc-700">
-                  <span>Member Since</span>
+                  <span>{t('memberSince')}</span>
                   <span>{loggedInMember?.createdAt?.split('T')[0]}</span>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <span>Account Status</span>
-                  <span className="text-green-500">Active</span>
+                  <span>{t('accountStatus')}</span>
+                  <span className="text-green-500">{t('statusActive')}</span>
                 </div>
               </div>
             </div>
@@ -249,7 +238,7 @@ const ChangePassword = () => {
               disabled={isUpdatingProfile}
               className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
             >
-              Update Password and Log Out
+              {t('updateAndLogout')}
             </Button>
           </form>
         </Form>

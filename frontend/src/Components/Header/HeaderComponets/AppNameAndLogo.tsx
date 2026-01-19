@@ -1,4 +1,5 @@
-import Logo from '@/assets/react.svg';
+import Logo from '@/assets/DevLinkLogo.png';
+
 import { useStore } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 

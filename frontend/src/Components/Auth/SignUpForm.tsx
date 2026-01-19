@@ -1,15 +1,13 @@
-//React
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
-import Logo from '@/assets/react.svg';
+import Logo from '@/assets/DevLinkLogo.png';
 
-//Hooks
 import { useStore } from '@/hooks';
 import { useEnter } from '@/hooks';
 
-//3rd lib
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,24 +26,8 @@ import {
 } from '@/Components/ui';
 import { Loader2 } from 'lucide-react';
 
-const SignupSchema = z
-  .object({
-    firstName: z.string().min(1, 'First name is required'),
-    lastName: z.string().min(1, 'Last name is required'),
-    username: z.string().min(1, 'Username is required'),
-    email: z.string().min(1, 'Email is required').email('Invalid email format'),
-    password: z.string().min(1, 'Password is required'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
-    photo: z.any().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-export type UserData = z.infer<typeof SignupSchema>;
-
 export function SignUpForm() {
+  const { t } = useTranslation();
   const { memberSignup } = useStore((state) => state);
   const navigate = useNavigate();
 
@@ -53,10 +35,27 @@ export function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const SignupSchema = z
+    .object({
+      firstName: z.string().min(1, t('firstNameReq')),
+      lastName: z.string().min(1, t('lastNameReq')),
+      username: z.string().min(1, t('usernameReq')),
+      email: z.string().min(1, t('emailReq')).email(t('invalidEmail')),
+      password: z.string().min(1, t('passwordReq')),
+      confirmPassword: z.string().min(1, t('confirmPasswordReq')),
+      photo: z.any().optional(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('passwordsMatchError'),
+      path: ['confirmPassword'],
+    });
+
+  type UserData = z.infer<typeof SignupSchema>;
+
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
 
-  const form = useForm({
+  const form = useForm<UserData>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
       firstName: '',
@@ -71,60 +70,37 @@ export function SignUpForm() {
   const { setError } = form;
 
   const handleSignup = form.handleSubmit(async (values) => {
-    // prevent double submission
     if (isSubmitting) return;
 
     try {
       setIsSubmitting(true);
-
-      // optimistic loading toast
-      const loadingToast = toast.loading('Creating your account...');
+      const loadingToast = toast.loading(t('creatingAccount'));
 
       const response = await memberSignup(values);
-
       toast.dismiss(loadingToast);
 
       if (response === true) {
-        toast.success('Successfully signed up. Welcome!', {
-          duration: 3000,
-        });
-
+        toast.success(t('signupSuccess'), { duration: 3000 });
         setTimeout(() => {
           navigate('/welcome-test');
         }, 500);
       } else {
-        throw new Error('Signup failed');
+        throw new Error(t('signupFailed'));
       }
     } catch (error: any) {
-      console.error('Signup error:', error);
-
-      const errorMsg =
-        error?.response?.data?.message || error?.message || 'An error occurred during signup';
-
+      const errorMsg = error?.response?.data?.message || error?.message || t('signupFailed');
       const lowerMsg = errorMsg.toLowerCase();
 
       if (lowerMsg.includes('username')) {
-        setError('username', {
-          type: 'manual',
-          message: errorMsg,
-        });
-        toast.error('Username is already taken');
+        setError('username', { type: 'manual', message: errorMsg });
+        toast.error(t('usernameTaken'));
       } else if (lowerMsg.includes('email')) {
-        setError('email', {
-          type: 'manual',
-          message: errorMsg,
-        });
-        toast.error('Email is already registered');
+        setError('email', { type: 'manual', message: errorMsg });
+        toast.error(t('emailRegistered'));
       } else if (lowerMsg.includes('transaction') || lowerMsg.includes('retry')) {
-        // database transaction error - likely transient
-        toast.error('Server is busy. Please try again in a moment.', {
-          duration: 5000,
-        });
+        toast.error(t('serverBusy'), { duration: 5000 });
       } else {
-        setError('root', {
-          type: 'manual',
-          message: errorMsg,
-        });
+        setError('root', { type: 'manual', message: errorMsg });
         toast.error(errorMsg);
       }
     } finally {
@@ -136,16 +112,13 @@ export function SignUpForm() {
 
   return (
     <div className="flex justify-center items-center h-[80vh] relative overflow-hidden pt-5">
-      {/* Background horizontal box */}
       <div className="signup-background-box bg-secondary w-[85%] h-[280px] rounded-md flex items-center justify-end px-12 overflow-hidden">
         <div className="max-w-md">
           <div className="flex justify-center mb-6">
             <div className="font-poppins flex items-center gap-2">
-              {/* Logo with Link */}
               <div className="flex justify-center items-center">
                 <img src={Logo} alt="Logo" className="h-6 w-6" />
               </div>
-              {/* Container for the name */}
               <div className="flex gap-1 items-center text-xl">
                 <span>
                   Dev<strong>Link</strong>
@@ -153,18 +126,17 @@ export function SignUpForm() {
               </div>
             </div>
           </div>
-          <h2 className="text-2xl font-semibold mb-3">Already have an account?</h2>
+          <h2 className="text-2xl font-semibold mb-3">{t('alreadyHaveAccount')}</h2>
           <p className="text-sm mb-8 leading-relaxed">
             Banjo tote bag bicycle rights, High Life sartorial cray craft beer whatever street art
             fap.
           </p>
           <Button asChild variant="outline" className="px-6">
-            <Link to="/login">Log In</Link>
+            <Link to="/login">{t('login')}</Link>
           </Button>
         </div>
       </div>
 
-      {/* Floating signup card */}
       <Card
         className={clsx(
           'absolute top-1/2 -translate-y-1/2 w-[450px] shadow-xl rounded-md transition-all duration-700 ease-in-out',
@@ -174,23 +146,23 @@ export function SignUpForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={handleSignup} className="space-y-4">
-              {/* First Name */}
               <FormField
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem className="mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>First Name</FormLabel>
+                      <FormLabel>{t('firstName')}</FormLabel>
                       <FormMessage className="text-xs" />
                     </div>
                     <FormControl>
                       <Input
-                        placeholder="Enter your first name"
+                        placeholder={t('enterFirstName')}
                         disabled={isSubmitting}
-                        className={`pr-10 ${
-                          form.formState.errors.firstName ? 'border-red-500 shake' : ''
-                        }`}
+                        className={clsx(
+                          'pr-10',
+                          form.formState.errors.firstName && 'border-red-500 shake'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -198,23 +170,23 @@ export function SignUpForm() {
                 )}
               />
 
-              {/* Last Name */}
               <FormField
                 control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem className="mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Last Name</FormLabel>
+                      <FormLabel>{t('lastName')}</FormLabel>
                       <FormMessage className="text-xs" />
                     </div>
                     <FormControl>
                       <Input
-                        placeholder="Enter your last name"
+                        placeholder={t('enterLastName')}
                         disabled={isSubmitting}
-                        className={`pr-10 ${
-                          form.formState.errors.lastName ? 'border-red-500 shake' : ''
-                        }`}
+                        className={clsx(
+                          'pr-10',
+                          form.formState.errors.lastName && 'border-red-500 shake'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -222,23 +194,23 @@ export function SignUpForm() {
                 )}
               />
 
-              {/* Username */}
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem className="mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>{t('username')}</FormLabel>
                       <FormMessage className="text-xs" />
                     </div>
                     <FormControl>
                       <Input
-                        placeholder="Enter your username"
+                        placeholder={t('enterUsername')}
                         disabled={isSubmitting}
-                        className={`pr-10 ${
-                          form.formState.errors.username ? 'border-red-500 shake' : ''
-                        }`}
+                        className={clsx(
+                          'pr-10',
+                          form.formState.errors.username && 'border-red-500 shake'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -246,23 +218,23 @@ export function SignUpForm() {
                 )}
               />
 
-              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem className="mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('email')}</FormLabel>
                       <FormMessage className="text-xs" />
                     </div>
                     <FormControl>
                       <Input
-                        placeholder="Enter your email"
+                        placeholder={t('enterEmail')}
                         disabled={isSubmitting}
-                        className={`pr-10 ${
-                          form.formState.errors.email ? 'border-red-500 shake' : ''
-                        }`}
+                        className={clsx(
+                          'pr-10',
+                          form.formState.errors.email && 'border-red-500 shake'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -270,25 +242,25 @@ export function SignUpForm() {
                 )}
               />
 
-              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem className="relative mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t('password')}</FormLabel>
                       <FormMessage className="text-xs" />
                     </div>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showPassword ? 'text' : 'password'}
-                          placeholder="Enter your password"
+                          placeholder={t('enterPassword')}
                           disabled={isSubmitting}
-                          className={`pr-10 ${
-                            form.formState.errors.password ? 'border-red-500 shake' : ''
-                          }`}
+                          className={clsx(
+                            'pr-10',
+                            form.formState.errors.password && 'border-red-500 shake'
+                          )}
                           {...field}
                         />
                         <Button
@@ -311,27 +283,25 @@ export function SignUpForm() {
                 )}
               />
 
-              {/* Confirm Password */}
               <FormField
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="relative mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormMessage className="text-xs">
-                        <span />
-                      </FormMessage>
+                      <FormLabel>{t('confirmPassword')}</FormLabel>
+                      <FormMessage className="text-xs" />
                     </div>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showConfirmPassword ? 'text' : 'password'}
-                          placeholder="Confirm your password"
+                          placeholder={t('confirmYourPassword')}
                           disabled={isSubmitting}
-                          className={`pr-10 ${
-                            form.formState.errors.confirmPassword ? 'border-red-500 shake' : ''
-                          }`}
+                          className={clsx(
+                            'pr-10',
+                            form.formState.errors.confirmPassword && 'border-red-500 shake'
+                          )}
                           {...field}
                         />
                         <Button
@@ -362,20 +332,19 @@ export function SignUpForm() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
+                    {t('creatingAccountBtn')}
                   </>
                 ) : (
-                  'Sign Up'
+                  t('signup')
                 )}
               </Button>
 
-              {/* Login button shown only under 1300px */}
               <Button
                 asChild
                 variant="outline"
                 className="px-6 w-full hidden max-[1300px]:flex animate-dropIn"
               >
-                <Link to="/login">Login</Link>
+                <Link to="/login">{t('login')}</Link>
               </Button>
             </form>
           </Form>

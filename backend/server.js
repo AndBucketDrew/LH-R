@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -11,8 +12,6 @@ import router from './routes/router.js';
 
 import { errorHandler } from './common/index.js';
 import { app, server } from './common/socket.js';
-
-dotenv.config();
 
 const PORT = process.env.PORT || 8000;
 const CONNECTION_STRING = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@lh-remake.johjfoh.mongodb.net/`;
@@ -54,7 +53,9 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(CONNECTION_STRING)
   .then(() => {
-    server.listen(PORT);
+    server.listen(PORT, () => {
+      console.log(`http://localhost:${PORT}`);
+    });
   })
   .catch((error) => {
     console.log('Verbindung zu MongoDB nicht möglich', error);
