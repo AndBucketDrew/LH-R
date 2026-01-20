@@ -48,6 +48,7 @@ async function scheduleNews() {
 
       await News.deleteMany({});
       await News.insertMany(limitedArticles, { ordered: false });
+      console.log('news');
     } catch (error) {
       console.error('Error fetching API data | ', error.message);
     }

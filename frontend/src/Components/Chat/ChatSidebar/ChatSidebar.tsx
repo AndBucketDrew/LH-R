@@ -21,6 +21,7 @@ const ChatSidebar = () => {
     lastMessages,
     subscribeToMessages,
     unsubscribeFromMessages,
+    loggedInMember, // Get current user info
   } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,7 +39,7 @@ const ChatSidebar = () => {
   const filteredFriends = useMemo(() => {
     const query = searchQuery.toLowerCase();
     return friends.filter((friend) =>
-      `${friend.firstName} ${friend.lastName} ${friend.username}`.toLowerCase().includes(query)
+      `${friend.firstName} ${friend.lastName} ${friend.username}`.toLowerCase().includes(query),
     );
   }, [friends, searchQuery]);
 
@@ -53,6 +54,18 @@ const ChatSidebar = () => {
       return dateB - dateA;
     });
   }, [filteredFriends, lastMessages]);
+
+  const getMessagePrefix = (message: any, friend: any) => {
+    if (!message) return '';
+
+    const isFromCurrentUser = message.senderId === loggedInMember?._id;
+
+    if (isFromCurrentUser) {
+      return 'Me: ';
+    } else {
+      return `${friend.firstName}: `;
+    }
+  };
 
   if (isUsersLoading) return <ChatSidebarSkeleton />;
 
@@ -80,44 +93,54 @@ const ChatSidebar = () => {
       </div>
 
       <div className="overflow-y-auto w-full py-3 flex-1">
-        {sortedFriends.map((friend) => (
-          <button
-            key={friend._id}
-            onClick={() => setSelectedUser(friend)}
-            className={`
-              w-full p-3 flex items-center gap-3
-               transition-colors rounded-l-xl hover:bg-[#3a3b3c5f]
-              ${
-                selectedUser?._id === friend._id
-                  ? 'bg-gray-300 dark:bg-[oklch(0.22_0.015_285)]'
-                  : ''
-              }
-            `}
-          >
-            <div className="relative mx-auto lg:mx-0">
-              <img
-                src={`${friend?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
-                alt={friend.firstName[0]}
-                className="size-12 object-cover rounded-full"
-              />
-            </div>
+        {sortedFriends.map((friend) => {
+          const lastMessage = lastMessages[friend._id];
+          const messagePrefix = getMessagePrefix(lastMessage, friend);
 
-            <div className="hidden lg:flex text-left min-w-0 flex-1 justify-between items-center">
-              <div className="min-w-0 flex-1">
-                <div className="font-medium truncate">{`${friend.firstName} ${friend.lastName}`}</div>
-                <div className="text-sm text-zinc-400 truncate">
-                  {formatSidebarMessage(lastMessages[friend._id]?.text)}
+          return (
+            <button
+              key={friend._id}
+              onClick={() => setSelectedUser(friend)}
+              className={`
+                w-full p-3 flex items-center gap-3
+                 transition-colors rounded-l-xl hover:bg-[#3a3b3c5f]
+                ${
+                  selectedUser?._id === friend._id
+                    ? 'bg-gray-300 dark:bg-[oklch(0.22_0.015_285)]'
+                    : ''
+                }
+              `}
+            >
+              <div className="relative mx-auto lg:mx-0">
+                <img
+                  src={`${friend?.photo?.url}?tr=w-128,h-128,cm-round,cq-95,sh-20,q-95,f-auto`}
+                  alt={friend.firstName[0]}
+                  className="size-12 object-cover rounded-full"
+                />
+              </div>
+
+              <div className="hidden lg:flex text-left min-w-0 flex-1 justify-between items-center">
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium truncate">{`${friend.firstName} ${friend.lastName}`}</div>
+                  <div className="text-sm text-zinc-400 truncate">
+                    {lastMessage && (
+                      <>
+                        <span className="font-medium">{messagePrefix}</span>
+                        {formatSidebarMessage(lastMessage.text)}
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="text-xs text-zinc-500 ml-2 whitespace-nowrap">
+                  {(() => {
+                    const createdAt = lastMessage?.createdAt;
+                    return createdAt ? formatRelativeTime(createdAt) : '';
+                  })()}
                 </div>
               </div>
-              <div className="text-xs text-zinc-500 ml-2 whitespace-nowrap">
-                {(() => {
-                  const createdAt = lastMessages[friend._id]?.createdAt;
-                  return createdAt ? formatRelativeTime(createdAt) : '';
-                })()}
-              </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
 
         {sortedFriends.length === 0 && (
           <div className="text-center text-zinc-500 py-4">

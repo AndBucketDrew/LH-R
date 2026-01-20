@@ -23,7 +23,7 @@ app.use(
     directives: {
       scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
     },
-  })
+  }),
 );
 
 app.use(express.json());
@@ -58,5 +58,5 @@ mongoose
     });
   })
   .catch((error) => {
-    console.log('Verbindung zu MongoDB nicht möglich', error);
+    console.log('MongoDB connection not possible', error);
   });
