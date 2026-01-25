@@ -25,7 +25,7 @@ const renderWithRouter = () => {
   return render(
     <MemoryRouter>
       <SignUpForm />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 
@@ -158,18 +158,18 @@ describe('SignUpForm', () => {
 
       await user.type(
         screen.getByPlaceholderText(/enter your first name/i),
-        validFormData.firstName
+        validFormData.firstName,
       );
       await user.type(screen.getByPlaceholderText(/enter your last name/i), validFormData.lastName);
       await user.type(screen.getByPlaceholderText(/enter your username/i), validFormData.username);
       await user.type(screen.getByPlaceholderText(/enter your email/i), validFormData.email);
       await user.type(
         screen.getByPlaceholderText(/^enter your password$/i),
-        validFormData.password
+        validFormData.password,
       );
       await user.type(
         screen.getByPlaceholderText(/confirm your password/i),
-        validFormData.confirmPassword
+        validFormData.confirmPassword,
       );
 
       await user.click(screen.getByRole('button', { name: /sign up/i }));
@@ -182,24 +182,24 @@ describe('SignUpForm', () => {
     it('shows loading state during submission', async () => {
       const user = userEvent.setup();
       mockMemberSignup.mockImplementation(
-        () => new Promise((res) => setTimeout(() => res(true), 100))
+        () => new Promise((res) => setTimeout(() => res(true), 100)),
       );
       renderWithRouter();
 
       await user.type(
         screen.getByPlaceholderText(/enter your first name/i),
-        validFormData.firstName
+        validFormData.firstName,
       );
       await user.type(screen.getByPlaceholderText(/enter your last name/i), validFormData.lastName);
       await user.type(screen.getByPlaceholderText(/enter your username/i), validFormData.username);
       await user.type(screen.getByPlaceholderText(/enter your email/i), validFormData.email);
       await user.type(
         screen.getByPlaceholderText(/^enter your password$/i),
-        validFormData.password
+        validFormData.password,
       );
       await user.type(
         screen.getByPlaceholderText(/confirm your password/i),
-        validFormData.confirmPassword
+        validFormData.confirmPassword,
       );
 
       const submitButton = screen.getByRole('button', { name: /sign up/i });
@@ -215,7 +215,6 @@ describe('SignUpForm', () => {
 
       renderWithRouter();
 
-<<<<<<< HEAD
       await user.type(screen.getByPlaceholderText(/enter your first name/i), 'John');
       await user.type(screen.getByPlaceholderText(/enter your last name/i), 'Doe');
       await user.type(screen.getByPlaceholderText(/enter your username/i), 'johndoe');
@@ -232,65 +231,39 @@ describe('SignUpForm', () => {
             duration: 3000,
           });
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
-=======
-      await user.type(
-        screen.getByPlaceholderText(/enter your first name/i),
-        validFormData.firstName
-      );
-      await user.type(screen.getByPlaceholderText(/enter your last name/i), validFormData.lastName);
-      await user.type(screen.getByPlaceholderText(/enter your username/i), validFormData.username);
-      await user.type(screen.getByPlaceholderText(/enter your email/i), validFormData.email);
-      await user.type(
-        screen.getByPlaceholderText(/^enter your password$/i),
-        validFormData.password
-      );
-      await user.type(
-        screen.getByPlaceholderText(/confirm your password/i),
-        validFormData.confirmPassword
-      );
-
-      await user.click(screen.getByRole('button', { name: /sign up/i }));
-
-      await waitFor(() => {
-        expect(toast.loading).toHaveBeenCalledWith('Creating your account...');
-        expect(toast.success).toHaveBeenCalledWith('Successfully signed up. Welcome!', {
-          duration: 3000,
-        });
-      });
->>>>>>> e14aa69ba2f38bd6f1722bac832f11ec887ade37
 
       // Fix: Match the actual navigation path from the component
       await waitFor(
         () => {
           expect(mockNavigate).toHaveBeenCalledWith('/welcome-test');
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
     it('prevents double submission', async () => {
       const user = userEvent.setup();
       mockMemberSignup.mockImplementation(
-        () => new Promise((res) => setTimeout(() => res(true), 100))
+        () => new Promise((res) => setTimeout(() => res(true), 100)),
       );
       renderWithRouter();
 
       await user.type(
         screen.getByPlaceholderText(/enter your first name/i),
-        validFormData.firstName
+        validFormData.firstName,
       );
       await user.type(screen.getByPlaceholderText(/enter your last name/i), validFormData.lastName);
       await user.type(screen.getByPlaceholderText(/enter your username/i), validFormData.username);
       await user.type(screen.getByPlaceholderText(/enter your email/i), validFormData.email);
       await user.type(
         screen.getByPlaceholderText(/^enter your password$/i),
-        validFormData.password
+        validFormData.password,
       );
       await user.type(
         screen.getByPlaceholderText(/confirm your password/i),
-        validFormData.confirmPassword
+        validFormData.confirmPassword,
       );
 
       const submitButton = screen.getByRole('button', { name: /sign up/i });
@@ -308,11 +281,7 @@ describe('SignUpForm', () => {
       const user = userEvent.setup();
       // Fix: Use an error message that contains "username" to trigger the correct error path
       mockMemberSignup.mockRejectedValue({
-<<<<<<< HEAD
         response: { data: { message: 'Username is already taken' } },
-=======
-        response: { data: { message: 'Username already exists' } },
->>>>>>> e14aa69ba2f38bd6f1722bac832f11ec887ade37
       });
 
       renderWithRouter();
@@ -330,7 +299,7 @@ describe('SignUpForm', () => {
         () => {
           expect(toast.error).toHaveBeenCalledWith('Username is already taken');
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
@@ -403,7 +372,7 @@ describe('SignUpForm', () => {
     it('disables all inputs during submission', async () => {
       const user = userEvent.setup();
       mockMemberSignup.mockImplementation(
-        () => new Promise((res) => setTimeout(() => res(true), 100))
+        () => new Promise((res) => setTimeout(() => res(true), 100)),
       );
 
       renderWithRouter();
@@ -433,7 +402,7 @@ describe('SignUpForm', () => {
         () => {
           expect(screen.getByPlaceholderText(/enter your first name/i)).not.toBeDisabled();
         },
-        { timeout: 2000 }
+        { timeout: 2000 },
       );
     });
   });
