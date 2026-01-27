@@ -14,6 +14,8 @@ To explore the platform without creating an account, please use the following de
 * **Username:** `aronpozsar`
 * **Password:** `123123`
 
+In case of loading errors refresh the page, it is a hosting issue.
+
 ---
 
 ## 🎯 Project Overview
@@ -81,7 +83,7 @@ npm install
 ```
 
 2. **Environment Setup**:
-Create a `.env` file in the `/backend` directory using the following template:
+The `.env` file in the `/backend` directory uses the following template:
 
 ```env
 PORT=8000
