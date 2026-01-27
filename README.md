@@ -7,11 +7,12 @@
 
 **Experience the platform live:** [DevLink - Live App](https://dev-link-ruby.vercel.app/login)
 
+**In case of loading errors refresh the page, it is a hosting issue.**
+
 ### **Recruiter / Guest Access**
 
 To explore the platform without creating an account, please use the following demonstration credentials:
 
-**In case of loading errors refresh the page, it is a hosting issue.**
 
 * **Username:** `aronpozsar`
 * **Password:** `123123`
