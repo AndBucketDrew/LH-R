@@ -113,13 +113,11 @@ export const createFriendsSlice: StateCreator<StoreState, [], [], FriendsStore> 
         method: 'delete',
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Friend removed');
 
       get().fetchFriends();
       get().fetchPending();
     } catch (error: any | unknown) {
       console.error(`Error while deleting, ${error}`);
-      toast.error(`Error while deleting a friend!`);
     }
   },
 
@@ -136,8 +134,6 @@ export const createFriendsSlice: StateCreator<StoreState, [], [], FriendsStore> 
         method: 'post',
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      toast.success('Friend request sent!');
 
       await get().fetchPending();
 
@@ -161,8 +157,6 @@ export const createFriendsSlice: StateCreator<StoreState, [], [], FriendsStore> 
         },
         data: { action: 'accept' }, // <-- Send the object directly
       });
-
-      toast.success('Friend request accepted!');
     } catch (error: any | unknown) {
       toast.error(error.message);
     }
@@ -181,8 +175,6 @@ export const createFriendsSlice: StateCreator<StoreState, [], [], FriendsStore> 
         },
         data: { action: 'decline' },
       });
-
-      toast.success('Friend request rejected!');
     } catch (error: any | unknown) {
       toast.error(error.message);
     }

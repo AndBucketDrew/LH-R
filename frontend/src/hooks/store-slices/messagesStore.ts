@@ -90,7 +90,7 @@ export const createMessageSlice: StateCreator<StoreState, [], [], MessagesStore>
     const { selectedUser, messages } = get();
     if (!selectedUser?._id) {
       console.error('sendMessage: No selected user');
-      toast.error('No user selected to send message');
+
       return;
     }
     try {

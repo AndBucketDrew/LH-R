@@ -85,6 +85,7 @@ export function SignUpForm() {
           navigate('/welcome-test');
         }, 500);
       } else {
+        toast.dismiss(loadingToast);
         throw new Error(t('signupFailed'));
       }
     } catch (error: any) {
@@ -93,10 +94,10 @@ export function SignUpForm() {
 
       if (lowerMsg.includes('username')) {
         setError('username', { type: 'manual', message: errorMsg });
-        toast.error(t('usernameTaken'));
+        toast.error(t('This username is taken!'));
       } else if (lowerMsg.includes('email')) {
         setError('email', { type: 'manual', message: errorMsg });
-        toast.error(t('emailRegistered'));
+        toast.error(t('This Email is taken!'));
       } else if (lowerMsg.includes('transaction') || lowerMsg.includes('retry')) {
         toast.error(t('serverBusy'), { duration: 5000 });
       } else {
@@ -247,7 +248,7 @@ export function SignUpForm() {
                 render={({ field }) => (
                   <FormItem className="relative mt-6">
                     <div className="flex items-center justify-between">
-                      <FormLabel>{t('password')}</FormLabel>
+                      <FormLabel>{t('Password')}</FormLabel>
                       <FormMessage className="text-xs" />
                     </div>
                     <FormControl>

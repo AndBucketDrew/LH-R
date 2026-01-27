@@ -163,7 +163,6 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
         allPosts: [...state.allPosts, newPost],
       }));
 
-      toast.success('Post added successfully!');
       return true;
     } catch (error: any) {
       console.error('Upload error:', error);
@@ -214,8 +213,6 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
             ? { ...state.currentPost, likes: response.data.likes }
             : state.currentPost,
       }));
-
-      toast.success(response.data.liked ? 'Post liked!' : 'Post unliked!');
     } catch (error: any) {
       console.error('Like error:', error);
       toast.error(error.response?.data?.message || 'Failed to toggle like');
@@ -263,8 +260,6 @@ const createPostsSlice: StateCreator<StoreState, [], [], PostsStore> = (set, get
               }
             : state.currentPost,
       }));
-
-      toast.success('Comment added!');
     } catch (error: any) {
       console.error('Comment error:', error);
       toast.error(error.response?.data?.message || 'Failed to add comment');

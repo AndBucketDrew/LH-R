@@ -156,8 +156,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
         data,
       });
       if (response.status === 201 || response.status === 200) {
-        toast.success('Signed in successfully. Welcome!');
-
         await get().memberLogin({ username: data.username, password: data.password });
 
         get().connectSocket();
@@ -174,7 +172,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
           type: 'error',
           title: 'Signup Failed',
           description: error?.response?.data?.message || 'Something went wrong.',
-          duration: 10000,
+          duration: 5000,
         },
       });
       throw error;
@@ -316,7 +314,7 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       });
 
       await get().memberRefreshMe();
-      toast.success('Profile updated successfully!');
+
       return true;
     } catch (error: any) {
       console.error('error in updating profile', error);
@@ -355,7 +353,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
       });
 
       get().memberRefreshMe();
-      toast.success('Password updated successfully!');
       return true;
     } catch (error: any) {
       console.error('error in updating profile', error);
@@ -374,7 +371,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
         data,
       });
 
-      toast.success('Email sent!');
       return true;
     } catch (error: any) {
       console.error('error in updating profile', error);
@@ -395,7 +391,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
         data: { password },
       });
 
-      toast.success('New Password set successfully!');
       return true;
     } catch (error: any) {
       console.error('error in updating profile', error);
@@ -419,8 +414,6 @@ export const createMemberSlice: StateCreator<StoreState, [], [], MemberStore> = 
 
       localStorage.removeItem('lh_token');
       set({ loggedInMember: null });
-
-      toast.success('Account deleted successfully');
 
       return true;
     } catch (error: any) {
