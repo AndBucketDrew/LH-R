@@ -7,7 +7,7 @@
 
 **Experience the platform live:** [DevLink - Live App](https://dev-link-ruby.vercel.app/login)
 
-**In case of loading errors refresh the page, it is a hosting issue.**
+In case of **loading errors** refresh the page, it is a hosting issue.
 
 ### **Recruiter / Guest Access**
 
