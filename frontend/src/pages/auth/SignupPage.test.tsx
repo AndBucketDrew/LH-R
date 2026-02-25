@@ -342,7 +342,7 @@ describe('SignUpForm', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith('Server is busy. Please try again in a moment.', {
-          duration: 5000,
+          duration: 10000,
         });
       });
     });
