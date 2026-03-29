@@ -4,6 +4,7 @@ import type { StoreState } from '../useStore';
 import { createFriendsSlice } from './friendsStore';
 import { fetchAPI } from '@/utils';
 import { toast } from 'sonner';
+import { mockAxiosResponse } from '@/__mocks__/mocks';
 
 // external dependencies mocking
 vi.mock('@/utils/index', () => ({
@@ -53,7 +54,7 @@ describe('Friends Slice', () => {
         { _id: 'friend2' },
       ];
 
-      mockFetchAPI.mockResolvedValueOnce({ data: mockFriends });
+      mockFetchAPI.mockResolvedValueOnce(mockAxiosResponse(mockFriends));
 
       await useStore.getState().fetchFriends();
 
@@ -99,8 +100,13 @@ describe('Friends Slice', () => {
 
   describe('addFriend', () => {
     it('should call API and refresh pending + relationship status', async () => {
-      mockFetchAPI.mockResolvedValueOnce({});
-
+      mockFetchAPI.mockResolvedValueOnce({
+        data: {},
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
       const fetchPendingSpy = vi.spyOn(useStore.getState(), 'fetchPending');
       const fetchStatusSpy = vi.spyOn(useStore.getState(), 'fetchRelationshipStatus');
 
@@ -120,8 +126,13 @@ describe('Friends Slice', () => {
 
   describe('acceptFriendRequest', () => {
     it('should send correct PUT request with action accept', async () => {
-      mockFetchAPI.mockResolvedValueOnce({});
-
+      mockFetchAPI.mockResolvedValueOnce({
+        data: {},
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
       await useStore.getState().acceptFriendRequest('sender456');
 
       expect(mockFetchAPI).toHaveBeenCalledWith(
@@ -136,8 +147,13 @@ describe('Friends Slice', () => {
 
   describe('rejectFriendRequest', () => {
     it('should send correct PUT request with action decline', async () => {
-      mockFetchAPI.mockResolvedValueOnce({});
-
+      mockFetchAPI.mockResolvedValueOnce({
+        data: {},
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
       await useStore.getState().rejectFriendRequest('sender789');
 
       expect(mockFetchAPI).toHaveBeenCalledWith(
