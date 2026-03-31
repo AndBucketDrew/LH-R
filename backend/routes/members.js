@@ -50,7 +50,7 @@ router.post(
 
 router.get('/', getAllMembers);
 router.get('/username/:username', getMemberByUsername);
-router.get('/:id', checkToken, getOneMember);
+router.get('/:id', getOneMember);
 
 // Protected routes
 

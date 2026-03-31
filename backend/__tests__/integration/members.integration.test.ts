@@ -263,19 +263,6 @@ describe('Members Integration Tests', () => {
 
       expect(res.status).toBe(404);
     });
-
-    it('should return 401 without Authorization header', async () => {
-      const res = await getRequest().get(`/members/${testUser._id}`);
-      expect(res.status).toBe(401);
-    });
-
-    it('should return 401 with invalid token', async () => {
-      const res = await getRequest()
-        .get(`/members/${testUser._id}`)
-        .set('Authorization', 'Bearer invalid.token.here');
-
-      expect(res.status).toBe(401);
-    });
   });
 
   // ==================== GET /members/username/:username ====================
@@ -528,59 +515,6 @@ describe('Members Integration Tests', () => {
 
     it('should return 401 if not authenticated', async () => {
       const res = await getRequest().get('/members/search?q=test');
-      expect(res.status).toBe(401);
-    });
-  });
-
-  // ==================== Authentication Edge Cases ====================
-
-  describe('Authentication Edge Cases', () => {
-    it('should reject expired token', async () => {
-      const expiredToken = jwt.sign({ id: testUser._id }, process.env.JWT_KEY!, {
-        expiresIn: '0s',
-      });
-
-      const res = await getRequest()
-        .get(`/members/${testUser._id}`)
-        .set('Authorization', `Bearer ${expiredToken}`);
-
-      expect(res.status).toBe(401);
-    });
-
-    it('should reject malformed token', async () => {
-      const res = await getRequest()
-        .get(`/members/${testUser._id}`)
-        .set('Authorization', 'Bearer malformed.token');
-
-      expect(res.status).toBe(401);
-    });
-
-    it('should reject token signed with wrong secret', async () => {
-      const wrongToken = jwt.sign({ id: testUser._id }, 'wrong-secret');
-
-      const res = await getRequest()
-        .get(`/members/${testUser._id}`)
-        .set('Authorization', `Bearer ${wrongToken}`);
-
-      expect(res.status).toBe(401);
-    });
-
-    it('should reject token for deleted user', async () => {
-      const { user, token } = await createAuthenticatedUser();
-      await Member.findByIdAndDelete(user._id);
-
-      const res = await getRequest()
-        .get(`/members/${testUser._id}`)
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(res.status).toBe(401);
-    });
-
-    it('should reject request with no Bearer prefix', async () => {
-      const res = await getRequest()
-        .get(`/members/${testUser._id}`)
-        .set('Authorization', validToken); // missing "Bearer "
-
       expect(res.status).toBe(401);
     });
   });
