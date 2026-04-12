@@ -14,7 +14,7 @@ In case of **loading errors** refresh the page, it is a hosting issue.
 To explore the platform without creating an account, please use the following demonstration credentials:
 
 
-* **Username:** `aronpozsar`
+* **Username:** `andrijaturcic`
 * **Password:** `123123`
 
 
@@ -120,8 +120,8 @@ npm run dev
 
 ## 📧 Contact
 
-**Aron Pozsar** [LinkedIn](https://www.linkedin.com/in/aronpozsar/) | aronpozsar@gmail.com
+**Andrija Turcic** andrijaturcic@gmail.com
 
 ---
 
-*This project was developed with a focus on **User Security**, **Technical Collaboration**, and **Modular API Design**.*
+*This project was developed with a focus on **User Security**, **Technical Collaboration** special thanks to @aronpozsar, and **Modular API Design**.*

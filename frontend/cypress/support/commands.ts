@@ -14,10 +14,10 @@ const TEST_TOKEN =
 
 const TEST_MEMBER = {
   _id: '6855812bea51c9f9012dfd08',
-  username: 'vinjaklorddd',
-  email: 'aaaronpozsar@gmail.com',
-  firstName: 'Aron',
-  lastName: 'Pozzzar',
+  username: 'andrijaturcic',
+  email: 'andrija.turcic@gmail.com',
+  firstName: 'Andrija',
+  lastName: 'Turcic',
 };
 
 Cypress.Commands.add('loginByLocalStorage', () => {

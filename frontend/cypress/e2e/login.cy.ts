@@ -12,8 +12,8 @@ describe('Login Page', () => {
   });
 
   it('should have default values prefilled in the form', () => {
-    // LoginForm defaultValues has aronpozsar / 123123
-    cy.get('input').first().should('have.value', 'aronpozsar');
+    // LoginForm defaultValues has andrijaturcic / 123123
+    cy.get('input').first().should('have.value', 'andrijaturcic');
   });
 
   it('should show validation error when username is cleared and form submitted', () => {
